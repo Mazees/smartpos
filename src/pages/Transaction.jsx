@@ -29,7 +29,31 @@ const Transaction = () => {
   const handlePrint = async () => {
     let str = `
 <IMAGE>1#${iconBase64}<110><112>BURGER KUDAPAN
-<110>#TRX-${dataOrders.id} ${dateOrdered}<010>================================<000>${dataOrderDetails.map((detail, index) => `${index + 1}. ${detail.name}\n(Qty: ${detail.qty} x @ Rp ${detail.discount_price ? detail.discount_price.toLocaleString("id-ID") : detail.original_price.toLocaleString("id-ID")})\nSubtotal: Rp ${detail.subtotal.toLocaleString("id-ID")} ${detail.note ? '\nCatatan: ' + detail.note : ""}${index+1===dataOrderDetails.length ? "" : "\n"}`).join('')}<010>================================<000>Jumlah Item: ${jumlahItem}x\nTotal Pembayaran: Rp ${dataOrders.total_price.toLocaleString("id-ID")}\nBayar (${dataOrders.cash ? "Tunai" : "QRIS"}): ${dataOrders.cash ? "Rp " + dataOrders.cash.toLocaleString("id-ID") : "Lunas"}\nKembali: Rp ${dataOrders.change ? dataOrders.change.toLocaleString("id-ID") : "0"}<010>================================ <110>Our Menu:<QR>1#20#https://wa.me/c/6281240044516
+<110>#TRX-${dataOrders.id} ${dateOrdered}
+<010>Nama Pelanggan: ${
+      dataOrders.customer_name || "Umum"
+    }<010>================================<000>${dataOrderDetails
+      .map(
+        (detail, index) =>
+          `${index + 1}. ${detail.name}\n(Qty: ${detail.qty} x @ Rp ${
+            detail.discount_price
+              ? detail.discount_price.toLocaleString("id-ID")
+              : detail.original_price.toLocaleString("id-ID")
+          })\nSubtotal: Rp ${detail.subtotal.toLocaleString("id-ID")} ${
+            detail.note ? "\nCatatan: " + detail.note : ""
+          }${index + 1 === dataOrderDetails.length ? "" : "\n"}`
+      )
+      .join(
+        ""
+      )}<010>================================<000>Jumlah Item: ${jumlahItem}x\nTotal Pembayaran: Rp ${dataOrders.total_price.toLocaleString(
+      "id-ID"
+    )}\nBayar (${dataOrders.cash ? "Tunai" : "QRIS"}): ${
+      dataOrders.cash
+        ? "Rp " + dataOrders.cash.toLocaleString("id-ID")
+        : "Lunas"
+    }\nKembali: Rp ${
+      dataOrders.change ? dataOrders.change.toLocaleString("id-ID") : "0"
+    }<010>================================ <110>Our Menu:<QR>1#20#https://wa.me/c/6281240044516
     `;
 
     try {
@@ -218,7 +242,9 @@ Total Pembayaran: Rp ${dataOrders.total_price.toLocaleString("id-ID")}`;
             </div>
           </div>
         </dialog>
-        <button className="btn w-full" onClick={handlePrint}>PRINT RECEIPT</button>
+        <button className="btn w-full" onClick={handlePrint}>
+          PRINT RECEIPT
+        </button>
         <NavLink to="/" className="btn btn-accent w-full">
           BUAT PESANAN BARU
         </NavLink>
