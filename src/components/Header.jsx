@@ -148,7 +148,7 @@ const Header = ({ children, title }) => {
                 </span>
               </button>
             </li>
-            <li>
+            {/* <li>
               <button
                 onClick={() => {
                   navigate("/laporan");
@@ -178,7 +178,7 @@ const Header = ({ children, title }) => {
                   Laporan Penjualan
                 </span>
               </button>
-            </li>
+            </li> */}
           </ul>
           <button
             className="btn btn-neutral w-[90%] mx-auto mt-5 is-drawer-close:hidden"

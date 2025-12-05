@@ -4,7 +4,7 @@ import { useState, useContext, useEffect, use } from "react";
 import { CartContext } from "../contexts/CartContext";
 import { useNavigate, useLocation } from "react-router-dom";
 import Alert from "../components/Alert";
-import { addOrderDetails, addOrders } from "../api/api";
+import { addOrderDetails, addOrders, addMembers } from "../api/api";
 
 const Payment = () => {
   const [page, setPage] = useState(1);
@@ -113,17 +113,20 @@ const Payment = () => {
                   if (detailsError) {
                     handleNotification(detailsError.message, "error");
                   } else {
-                    handleNotification(
-                      "Pesanan berhasil ditambahkan",
-                      "success"
+                    const { error: membersError } = await addMembers(
+                      namaPelanggan
                     );
-                    navigate("/keranjang/pembayaran/transaksi", {
-                      state: {
-                        orders: orders[0],
-                        details: details,
-                        qty: jumlahItem,
-                      },
-                    });
+                    if (membersError) {
+                      console.error("Gagal menambahkan member:", membersError);
+                    } else {
+                      navigate("/keranjang/pembayaran/transaksi", {
+                        state: {
+                          orders: orders[0],
+                          details: details,
+                          qty: jumlahItem,
+                        },
+                      });
+                    }
                   }
                 }
               }
@@ -163,14 +166,20 @@ const Payment = () => {
                 if (detailsError) {
                   handleNotification(detailsError.message, "error");
                 } else {
-                  handleNotification("Pesanan berhasil ditambahkan", "success");
-                  navigate("/keranjang/pembayaran/transaksi", {
-                    state: {
-                      orders: orders[0],
-                      details: details,
-                      qty: jumlahItem,
-                    },
-                  });
+                  const { error: membersError } = await addMembers(
+                    namaPelanggan
+                  );
+                  if (membersError) {
+                    console.error("Gagal menambahkan member:", membersError);
+                  } else {
+                    navigate("/keranjang/pembayaran/transaksi", {
+                      state: {
+                        orders: orders[0],
+                        details: details,
+                        qty: jumlahItem,
+                      },
+                    });
+                  }
                 }
               }
             }}

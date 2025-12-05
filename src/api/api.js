@@ -118,6 +118,17 @@ export const addKategori = async (namaKategori = "") => {
     .select();
   return { data, error };
 };
+export const addMembers = async (name) => {
+  const { data, error } = await supabase
+    .from("members")
+    .insert([
+      {
+        name,
+      },
+    ])
+    .select();
+  return { data, error };
+};
 export const updateKategori = async (idKategori, namaKategori) => {
   const { data, error } = await supabase
     .from("kategori")
