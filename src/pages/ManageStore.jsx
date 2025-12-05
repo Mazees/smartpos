@@ -40,6 +40,9 @@ const ManageStore = () => {
       <ListNav to="/kelola/kategori" desc={`${kategori.length} Kategori`}>
         Daftar Kategori
       </ListNav>
+      {/* <ListNav to="/kelola/member" desc={`${kategori.length} Kategori`}>
+        Daftar Member
+      </ListNav> */}
     </Header>
   );
 };
