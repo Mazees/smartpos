@@ -51,9 +51,12 @@ const Transaction = () => {
       dataOrders.cash
         ? "Rp " + dataOrders.cash.toLocaleString("id-ID")
         : "Lunas"
-    }\nKembali: Rp ${
-      dataOrders.change ? dataOrders.change.toLocaleString("id-ID") : "0"
-    }<010>================================ <110>Scan Menu:<QR>1#20#https://wa.me/c/6281240044516
+    }\nKembali: Rp ${(dataOrders.cash
+      ? dataOrders.cash - dataOrders.total_price
+      : 0
+    ).toLocaleString(
+      "id-ID"
+    )}<010>================================ <110>Scan Menu:<QR>1#20#https://wa.me/c/6281240044516
     `;
 
     try {
@@ -92,7 +95,9 @@ const Transaction = () => {
     const node = captureRef.current;
     htmlToImage.toBlob(node).then(async function (blob) {
       const shareData = {
-        files: [new File([blob], `receipt-${dataOrders.id}.png`, { type: blob.type })],
+        files: [
+          new File([blob], `receipt-${dataOrders.id}.png`, { type: blob.type }),
+        ],
       };
       if (navigator.canShare && navigator.canShare(shareData)) {
         await navigator.share(shareData);
@@ -124,11 +129,7 @@ const Transaction = () => {
   };
   return (
     <Header title="Transaksi">
-      <img
-        src="/kudapan.png"
-        className="mx-auto my-5 size-30"
-        alt="success"
-      />
+      <img src="/kudapan.png" className="mx-auto my-5 size-30" alt="success" />
       <h1 className="poppins-bold w-full text-center text-lg">
         Transaksi Berhasil!
       </h1>
@@ -157,7 +158,11 @@ const Transaction = () => {
                 ref={captureRef}
                 className="flex flex-col justify-center w-full items-center bg-[#d3d3d3] text-black p-5 rounded-lg"
               >
-                <img src="/icon.png" className="size-30" alt="Burger Kudapan Logo" />
+                <img
+                  src="/icon.png"
+                  className="size-30"
+                  alt="Burger Kudapan Logo"
+                />
                 <h1 className="text-xl poppins-bold">BURGER KUDAPAN</h1>
                 <h1 className="poppins-light text-sm">{dateOrdered}</h1>
                 <div className="w-full flex justify-between poppins-regular mt-10 text-sm">
@@ -173,9 +178,7 @@ const Transaction = () => {
                   ""
                 )}
                 <div className="w-full flex flex-col border-b-[0.1px] pb-4">
-                  <h1 className="poppins-bold mt-4">
-                    Daftar Pesanan:
-                  </h1>
+                  <h1 className="poppins-bold mt-4">Daftar Pesanan:</h1>
                   {dataOrderDetails.map((item, idx) => (
                     <>
                       <h1 className="poppins-medium w-full mt-4 text-sm">
@@ -215,24 +218,34 @@ const Transaction = () => {
                   ))}
                 </div>
                 <div className="w-full flex flex-col border-b-[0.1px] pb-4">
-                  <h1 className="poppins-bold mt-4">
-                    Detail Transaksi:
-                  </h1>
+                  <h1 className="poppins-bold mt-4">Detail Transaksi:</h1>
                   <div className="w-full flex justify-between poppins-light text-xs mt-2">
                     <h1>Jumlah Item</h1>
-                    <h1>4x</h1>
+                    <h1>{jumlahItem}x</h1>
                   </div>
                   <div className="w-full flex justify-between poppins-light text-xs mt-2">
                     <h1 className="poppins-medium">Total Pembayaran</h1>
-                    <h1>Rp 42.000</h1>
+                    <h1>Rp {dataOrders.total_price.toLocaleString("id-ID")}</h1>
                   </div>
                   <div className="w-full flex justify-between poppins-light text-xs mt-2">
-                    <h1 className="poppins-medium">Tunai</h1>
-                    <h1>Rp 50.000</h1>
+                    <h1 className="poppins-medium">
+                      Bayar ({dataOrders.cash ? "Tunai" : "QRIS"}):
+                    </h1>
+                    <h1>
+                      {dataOrders.cash
+                        ? `Rp ${dataOrders.cash.toLocaleString("id-ID")}`
+                        : "Lunas"}
+                    </h1>
                   </div>
                   <div className="w-full flex justify-between poppins-light text-xs mt-2">
                     <h1 className="poppins-medium">Kembalian</h1>
-                    <h1>Rp 8.000</h1>
+                    <h1>
+                      Rp{" "}
+                      {(dataOrders.cash
+                        ? dataOrders.cash - dataOrders.total_price
+                        : 0
+                      ).toLocaleString("id-ID")}
+                    </h1>
                   </div>
                 </div>
               </div>
