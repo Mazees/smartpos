@@ -117,11 +117,11 @@ const Products = () => {
           </label>
           {kategoriItems.map(
             (kategori, idxKategori) =>
-              menuItemsCopy.filter((menu) => menu.id_kategori === kategori.id)
+              menuItemsCopy.filter((filteredMenu) => filteredMenu.id_kategori === kategori.id)
                 .length > 0 && (
                 <ul
                   className="list bg-base-100 mt-3 border-b-[0.05px] border-b-accent/40 mx-2 py-4"
-                  key={kategori.id || idxKategori}
+                  key={kategori.id}
                 >
                   <h1 className="poppins-medium text-center w-full mb-1">
                     {kategori.name}
@@ -132,7 +132,7 @@ const Products = () => {
                       <li
                         onClick={() =>
                           navigate("/kelola/daftar-menu/edit-menu", {
-                            state: menuItemsCopy[idx],
+                            state: menu,
                           })
                         }
                         className="list-row flex items-center hover:bg-base-content/30 hover:text-white hover:cursor-pointer rounded-lg"
