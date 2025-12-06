@@ -37,23 +37,24 @@ const Transaction = () => {
         (detail, index) =>
           `${index + 1}. ${detail.name}\n(Qty: ${detail.qty} x @ Rp ${
             detail.discount_price
-              ? detail.discount_price.toLocaleString("id-ID")
-              : detail.original_price.toLocaleString("id-ID")
-          })\nSubtotal: Rp ${detail.subtotal.toLocaleString("id-ID")} ${
+              ? Number(detail.discount_price).toLocaleString("id-ID")
+              : Number(detail.original_price).toLocaleString("id-ID")
+          })\nSubtotal: Rp ${Number(detail.subtotal).toLocaleString("id-ID")} ${
             detail.note ? "\nCatatan: " + detail.note : ""
           }${index + 1 === dataOrderDetails.length ? "" : "\n"}`
       )
       .join(
         ""
-      )}<010>================================<000>Jumlah Item: ${jumlahItem}x\nTotal Pembayaran: Rp ${dataOrders.total_price.toLocaleString(
-      "id-ID"
-    )}\nBayar (${dataOrders.cash ? "Tunai" : "QRIS"}): ${
+      )}<010>================================<000>Jumlah Item: ${jumlahItem}x\nTotal Pembayaran: Rp ${Number(
+      dataOrders.total_price
+    ).toLocaleString("id-ID")}\nBayar (${
+      dataOrders.cash ? "Tunai" : "QRIS"
+    }): ${
       dataOrders.cash
-        ? "Rp " + dataOrders.cash.toLocaleString("id-ID")
+        ? "Rp " + Number(dataOrders.cash).toLocaleString("id-ID")
         : "Lunas"
-    }\nKembali: Rp ${(dataOrders.cash
-      ? dataOrders.cash - dataOrders.total_price
-      : 0
+    }\nKembali: Rp ${Number(
+      dataOrders.cash ? dataOrders.cash - dataOrders.total_price : 0
     ).toLocaleString(
       "id-ID"
     )}<010>================================ <110>Scan Menu:<QR>1#20#https://wa.me/c/6281240044516
@@ -133,7 +134,7 @@ const Transaction = () => {
       <h1 className="poppins-bold w-full text-center text-lg">
         Transaksi Berhasil!
       </h1>
-      <h1 className="poppins-light mx-auto text-center mt-3 text-sm py-1 px-4 bg-base-content text-white rounded-3xl">
+      <h1 className="poppins-light mx-auto text-center mt-3 text-sm py-2 px-4 bg-base-content text-white rounded-3xl">
         Tipe Pembayaran: {dataOrders.cash ? "Tunai" : "QRIS"}
       </h1>
       <div className="w-full flex justify-between mt-5 p-2 rounded-sm border">
@@ -144,7 +145,7 @@ const Transaction = () => {
         <h1 className="text-sm poppins-regular">ID TRANSAKSI</h1>
         <h1 className="text-sm poppins-regular">#{dataOrders.id}</h1>
       </div>
-      <div className="flex-1 flex flex-col gap-3 justify-end w-full h-full">
+      <div className="flex flex-col gap-3 justify-end w-full">
         <button
           className="btn w-full mt-5"
           onClick={() => document.getElementById("my_modal_4").showModal()}
@@ -194,21 +195,27 @@ const Transaction = () => {
                               : ""
                           }`}
                         >
-                          Rp {item.original_price.toLocaleString("id-ID")}
+                          Rp{" "}
+                          {Number(item.original_price).toLocaleString("id-ID")}
                         </h1>
                         {item.discount_price === 0 && <h1>{item.qty}x</h1>}
                       </div>
                       {item.discount_price !== 0 && (
                         <div className="w-full flex justify-between poppins-light text-xs mt-1">
                           <h1>
-                            Rp {item.discount_price.toLocaleString("id-ID")}
+                            Rp{" "}
+                            {Number(item.discount_price).toLocaleString(
+                              "id-ID"
+                            )}
                           </h1>
                           {item.discount_price !== 0 && <h1>{item.qty}x</h1>}
                         </div>
                       )}
                       <div className="w-full flex justify-between poppins-light text-xs mt-2">
                         <h1 className="poppins-medium">Subtotal</h1>
-                        <h1>Rp {item.subtotal.toLocaleString("id-ID")}</h1>
+                        <h1>
+                          Rp {Number(item.subtotal).toLocaleString("id-ID")}
+                        </h1>
                       </div>
                       <div className="w-full flex justify-between poppins-light text-xs mt-2">
                         <h1 className="poppins-medium">Catatan</h1>
@@ -225,7 +232,10 @@ const Transaction = () => {
                   </div>
                   <div className="w-full flex justify-between poppins-light text-xs mt-2">
                     <h1 className="poppins-medium">Total Pembayaran</h1>
-                    <h1>Rp {dataOrders.total_price.toLocaleString("id-ID")}</h1>
+                    <h1>
+                      Rp{" "}
+                      {Number(dataOrders.total_price).toLocaleString("id-ID")}
+                    </h1>
                   </div>
                   <div className="w-full flex justify-between poppins-light text-xs mt-2">
                     <h1 className="poppins-medium">
@@ -233,7 +243,9 @@ const Transaction = () => {
                     </h1>
                     <h1>
                       {dataOrders.cash
-                        ? `Rp ${dataOrders.cash.toLocaleString("id-ID")}`
+                        ? `Rp ${Number(dataOrders.cash).toLocaleString(
+                            "id-ID"
+                          )}`
                         : "Lunas"}
                     </h1>
                   </div>
@@ -241,9 +253,10 @@ const Transaction = () => {
                     <h1 className="poppins-medium">Kembalian</h1>
                     <h1>
                       Rp{" "}
-                      {(dataOrders.cash
-                        ? dataOrders.cash - dataOrders.total_price
-                        : 0
+                      {Number(
+                        dataOrders.cash
+                          ? dataOrders.cash - dataOrders.total_price
+                          : 0
                       ).toLocaleString("id-ID")}
                     </h1>
                   </div>

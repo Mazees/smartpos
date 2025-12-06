@@ -83,7 +83,7 @@ const History = () => {
           <div className="py-4 opacity-60 tracking-wide">
             Semua Riwayat Penjualan:
           </div>
-          <ul className="list flex-1 overflow-scroll bg-base-100">
+          <ul className="list flex-1 bg-base-100">
             {ordersCopy.map((order, idx) => (
               <li
                 key={order.id || idx}

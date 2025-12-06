@@ -6,10 +6,13 @@ import Loading from "../components/Loading";
 import Header from "../components/Header";
 import Breadcrumbs from "../components/Breadcrumbs";
 import { CartContext } from "../contexts/CartContext";
+import Alert from "../components/Alert";
 
 const Orders = () => {
   const [kategori, setKategori] = useState([]);
   const { cart, setCart } = useContext(CartContext);
+  const [manualPrice, setManualPrice] = useState("");
+  const [manualNote, setManualNote] = useState("");
   const navigate = useNavigate();
   const [totalHarga, setTotalHarga] = useState(0);
   const [jumlahItem, setJumlahItem] = useState(0);
@@ -17,6 +20,14 @@ const Orders = () => {
   const [defaultChecked, setDefaultChecked] = useState(true);
   const [menuCopy, setMenuCopy] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [notification, setNotification] = useState({
+    message: "",
+    variant: "warning",
+  });
+  const handleNotification = (message, variant) => {
+    setNotification({ message, variant });
+    setTimeout(() => setNotification({}), 1500);
+  };
   const loadData = async () => {
     setLoading(true);
     const { data: dataMenu, error: menuError } = await getAllReadyMenu();
@@ -85,8 +96,29 @@ const Orders = () => {
     });
   };
 
+  const handleManualSubmit = (e) => {
+    e.preventDefault();
+    const priceManual = Number(manualPrice);
+    setCart((prev) => [
+      ...prev,
+      {
+        menu_id: -1,
+        name: "Pesanan Manual",
+        original_price: priceManual,
+        discount_price: 0,
+        qty: 1,
+        note: manualNote,
+        subtotal: priceManual,
+      },
+    ]);
+    setManualPrice("");
+    setManualNote("");
+    handleNotification("Pesanan manual berhasil ditambahkan", "success");
+  };
+
   return (
     <Header title="Buat Pesanan">
+      <Alert message={notification.message} variant={notification.variant} />
       {loading ? (
         <div className="min-h-[60vh] flex items-center justify-center">
           <Loading message="Memuat menu..." />
@@ -169,7 +201,7 @@ const Orders = () => {
                 </label>
               </div>
               <div
-                className={`text-white fixed bottom-1 p-3 right-0 w-full justify-end z-50 ${
+                className={`text-white fixed bottom-1 p-3 right-0 lg:w-fit w-full justify-end z-50 ${
                   cart.length == 0 ? "hidden" : "flex"
                 }`}
               >
@@ -346,13 +378,39 @@ const Orders = () => {
               </ul>
             </>
           ) : (
-            <>
-              <fieldset className="fieldset mx-auto w-full max-w-lg">
-                <legend className="fieldset-legend">Tambahkan Pesanan Manual:</legend>
-                <input type="text" className="input w-full" placeholder="Type here" />
-                <p className="label">Contoh: Ongkir</p>
+            <form
+              className="flex flex-col w-full py-5"
+              onSubmit={handleManualSubmit}
+            >
+              <h1 className="poppins-bold text-lg">Pesanan Manual</h1>
+              <fieldset className="fieldset w-full max-w-lg">
+                <legend className="fieldset-legend poppins-regular">
+                  Tambahkan Pesanan Manual:
+                </legend>
+                <input
+                  type="number"
+                  className="input w-full"
+                  placeholder="Harga"
+                  value={manualPrice}
+                  required
+                  onChange={(e) => setManualPrice(e.target.value)}
+                />
+                <input
+                  type="text"
+                  required
+                  className="input w-full"
+                  placeholder="Catatan"
+                  value={manualNote}
+                  onChange={(e) => setManualNote(e.target.value)}
+                />
+                <p className="label">
+                  Contoh: Ongkos kirim/biaya lainnya yang tidak termasuk menu
+                </p>
+                <button type="submit" className="btn mt-2">
+                  Tambahkan
+                </button>
               </fieldset>
-            </>
+            </form>
           )}
         </>
       )}

@@ -8,7 +8,7 @@ const Header = ({ children, title }) => {
   return (
     <div className="drawer lg:drawer-open">
       <input id="my-drawer-4" type="checkbox" className="drawer-toggle" />
-      <div className="drawer-content">
+      <div className="drawer-content flex flex-col lg:h-screen">
         {/* Navbar */}
         <nav className="navbar sticky top-0 lg:top-2 z-30 w-full lg:rounded-lg lg:mt-2 lg:ml-2 bg-base-300">
           <label
@@ -37,9 +37,9 @@ const Header = ({ children, title }) => {
           </label>
           <h1 className="poppins-extrabold text-xl ml-2">{title}</h1>
         </nav>
-        <div className="overflow-y-scroll w-full lg:h-[calc(100vh-4rem)] px-4 py-2 flex flex-col">
+        <div className="w-full flex-1 flex flex-col min-h-0 pl-4 py-2">
           <Breadcrumbs />
-          {children}
+          <div className="w-full flex-1 overflow-y-auto pr-4 scrollbar-hide">{children}</div>
         </div>
       </div>
 
