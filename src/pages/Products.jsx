@@ -5,13 +5,14 @@ import { addMenu } from "../api/api";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Breadcrumbs from "../components/Breadcrumbs";
-import { getAllMenu } from "../api/api";
+import { getAllMenuOrdered, getAllKategori } from "../api/api";
 import supabase from "../api/supabase";
 import { realtime } from "../api/api";
 
 const Products = () => {
   const [menuItems, setMenuItems] = useState([]);
   const [menuItemsCopy, setMenuItemsCopy] = useState([]);
+  const [kategoriItems, setKategoriItems] = useState([]);
   const [loading, setLoading] = useState(false);
   const [notification, setNotification] = useState({
     message: "",
@@ -24,16 +25,30 @@ const Products = () => {
   const navigate = useNavigate();
   async function loadMenu() {
     setLoading(true);
-    const { data, error } = await getAllMenu();
-    if (error) {
-      console.error(error);
+    const { data: dataMenu, error: errorMenu } = await getAllMenuOrdered(
+      "price",
+      false
+    );
+    const { data: dataKategori, error: errorKategori } = await getAllKategori();
+    if (errorMenu) {
+      console.error(errorMenu);
       handleNotification(
-        `Error: ${error?.message ?? JSON.stringify(error)}`,
+        `Error: ${errorMenu?.message ?? JSON.stringify(errorMenu)}`,
         "error"
       );
       setMenuItems([]);
     } else {
-      setMenuItems(data || []);
+      setMenuItems(dataMenu);
+    }
+    if (errorKategori) {
+      console.error(errorKategori);
+      handleNotification(
+        `Error: ${errorKategori?.message ?? JSON.stringify(errorKategori)}`,
+        "error"
+      );
+      setKategoriItems([]);
+    } else {
+      setKategoriItems(dataKategori);
     }
     setLoading(false);
   }
@@ -100,7 +115,63 @@ const Products = () => {
               placeholder="Search"
             />
           </label>
+          {kategoriItems.map(
+            (kategori, idxKategori) =>
+              menuItemsCopy.filter((menu) => menu.id_kategori === kategori.id)
+                .length > 0 && (
+                <ul
+                  className="list bg-base-100 mt-3"
+                  key={kategori.id || idxKategori}
+                >
+                  <h1 className="poppins-bold text-lg w-full">
+                    {kategori.name}:
+                  </h1>
+                  {menuItemsCopy
+                    .filter((menu) => menu.id_kategori === kategori.id)
+                    .map((menu, idx) => (
+                      <li
+                        onClick={() =>
+                          navigate("/kelola/daftar-menu/edit-menu", {
+                            state: menuItemsCopy[idx],
+                          })
+                        }
+                        className="list-row flex items-center hover:bg-base-content/30 hover:text-white hover:cursor-pointer rounded-lg"
+                      >
+                        <div className="flex not-lg:flex-col lg:items-center lg:gap-3 gap-1">
+                          <div className="poppins-medium text-[14px]">
+                            {menu.name}
+                          </div>
+                          <div
+                            className={`${
+                              menu.status
+                                ? "bg-[#00ff00] text-black"
+                                : "bg-[#ff0000] text-white"
+                            } text-[10px] uppercase poppins-regular opacity-60 w-fit h-fit rounded-sm p-1`}
+                          >
+                            {menu.status ? "Tersedia" : "Tidak Tersedia"}
+                          </div>
+                        </div>
+                        <div className="poppins-medium text-[14px] ml-auto flex flex-col shrink-0">
+                          <h1
+                            className={`${
+                              menu.discount_price == 0 ? "" : "line-through"
+                            }`}
+                          >{`Rp ${menu.price.toLocaleString("id-ID")}`}</h1>
+                          <h1
+                            className={`${
+                              menu.discount_price == 0 ? "hidden" : ""
+                            }`}
+                          >{`Rp ${menu.discount_price.toLocaleString(
+                            "id-ID"
+                          )}`}</h1>
+                        </div>
+                      </li>
+                    ))}
+                </ul>
+              )
+          )}
           <ul className="list bg-base-100">
+            <h1 className="poppins-bold text-lg w-full">Semua Menu:</h1>
             {menuItemsCopy.map((menu, idx) => (
               <li
                 onClick={() =>

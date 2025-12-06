@@ -52,6 +52,39 @@ const Orders = () => {
     navigate("/keranjang");
   };
 
+  const handleAddToCart = (menu) => {
+    setCart((prev) => {
+      const prevItem = [...prev];
+      const newIndex = prevItem.findIndex((item) => item.menu_id == menu.id);
+      if (newIndex !== -1) {
+        prevItem[newIndex].qty += 1;
+        const activePrice =
+          prevItem[newIndex].discount_price &&
+          prevItem[newIndex].discount_price !== 0
+            ? prevItem[newIndex].discount_price
+            : prevItem[newIndex].original_price;
+        prevItem[newIndex].subtotal = prevItem[newIndex].qty * activePrice;
+        return prevItem;
+      } else {
+        return [
+          ...prev,
+          {
+            menu_id: menu.id,
+            name: menu.name,
+            original_price: menu.price,
+            discount_price: menu.discount_price || 0,
+            qty: 1,
+            note: "",
+            subtotal:
+              menu.discount_price && menu.discount_price !== 0
+                ? menu.discount_price
+                : menu.price,
+          },
+        ];
+      }
+    });
+  };
+
   return (
     <Header title="Buat Pesanan">
       {loading ? (
@@ -184,45 +217,89 @@ const Orders = () => {
                   {jumlahItem} Items
                 </button>
               </div>
+              {kategori.map(
+                (kat, idxKategori) =>
+                  menuCopy.filter((menu) => menu.id_kategori === kat.id)
+                    .length > 0 && (
+                    <ul
+                      className="list bg-base-100 mt-3"
+                      key={kat.id || idxKategori}
+                    >
+                      <h1 className="poppins-bold text-lg w-full px-4 pt-2">
+                        {kat.nama_kategori || kat.name}:
+                      </h1>
+                      {menuCopy
+                        .filter((menu) => menu.id_kategori === kat.id)
+                        .map((menu, idx) => (
+                          <li
+                            key={menu.id || idx}
+                            onClick={() => handleAddToCart(menu)}
+                            className="p-4 gap-2 flex items-center border-b-[0.5px] active:bg-base-content/30 active:text-white hover:cursor-pointer"
+                          >
+                            <div className="w-10 h-10 flex justify-center items-center poppins-bold bg-base-content rounded-lg text-base-300">
+                              {menu.name
+                                .split(" ")
+                                .slice(0, 2)
+                                .map((item) => item[0])}
+                            </div>
+                            <div className="flex flex-col justify-center">
+                              <div className="poppins-medium text-[14px] poppins-bold">
+                                {menu.name}
+                              </div>
+                              <div className="poppins-medium text-[14px] flex gap-1">
+                                <h1>
+                                  Rp{" "}
+                                  <span
+                                    className={`${
+                                      menu.discount_price == 0
+                                        ? ""
+                                        : "line-through"
+                                    }`}
+                                  >{` ${menu.price.toLocaleString(
+                                    "id-ID"
+                                  )}`}</span>
+                                </h1>
+                                <h1
+                                  className={`${
+                                    menu.discount_price == 0 ? "hidden" : ""
+                                  }`}
+                                >{`${menu.discount_price.toLocaleString(
+                                  "id-ID"
+                                )}`}</h1>
+                              </div>
+                            </div>
+                            <div
+                              className={`poppins-bold bg-base-300 ml-auto w-5 h-5 text-xs opacity-50 ${
+                                cart.findIndex(
+                                  (item) => item.menu_id == menu.id
+                                ) !== -1
+                                  ? "flex"
+                                  : "hidden"
+                              } justify-center items-center rounded-[5px]`}
+                            >
+                              {(cart.findIndex(
+                                (item) => item.menu_id == menu.id
+                              ) !== -1 &&
+                                cart[
+                                  cart.findIndex(
+                                    (item) => item.menu_id == menu.id
+                                  )
+                                ].qty) ||
+                                ""}
+                            </div>
+                          </li>
+                        ))}
+                    </ul>
+                  )
+              )}
               <ul className="list bg-base-100 mt-3">
+                <h1 className="poppins-bold text-lg w-full px-4 pt-2">
+                  Semua Menu:
+                </h1>
                 {menuCopy.map((menu, idx) => (
                   <li
-                    onClick={() => {
-                      setCart((prev) => {
-                        const prevItem = [...prev];
-                        const newIndex = prevItem.findIndex(
-                          (item) => item.menu_id == menu.id
-                        );
-                        console.log(newIndex);
-                        if (newIndex !== -1) {
-                          prevItem[newIndex].qty += 1;
-                          const activePrice =
-                            prevItem[newIndex].discount_price &&
-                            prevItem[newIndex].discount_price !== 0
-                              ? prevItem[newIndex].discount_price
-                              : prevItem[newIndex].original_price;
-                          prevItem[newIndex].subtotal =
-                            prevItem[newIndex].qty * activePrice;
-                          return prevItem;
-                        } else {
-                          return [
-                            ...prev,
-                            {
-                              menu_id: menu.id,
-                              name: menu.name,
-                              original_price: menu.price,
-                              discount_price: menu.discount_price || 0,
-                              qty: 1,
-                              note: "",
-                              subtotal:
-                                menu.discount_price && menu.discount_price !== 0
-                                  ? menu.discount_price
-                                  : menu.price,
-                            },
-                          ];
-                        }
-                      });
-                    }}
+                    key={menu.id || idx}
+                    onClick={() => handleAddToCart(menu)}
                     className="p-4 gap-2 flex items-center border-b-[0.5px] active:bg-base-content/30 active:text-white hover:cursor-pointer"
                   >
                     <div className="w-10 h-10 flex justify-center items-center poppins-bold bg-base-content rounded-lg text-base-300">

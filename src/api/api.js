@@ -95,18 +95,29 @@ export const getAllMenu = async () => {
     .order("name", { ascending: true });
   return { data, error };
 };
+
+export const getAllMenuOrdered = async (field, ascending = true) => {
+  const { data, error } = await supabase
+    .from("menu")
+    .select("*")
+    .order(field, { ascending: ascending });
+  return { data, error };
+};
+
 export const getAllMembers = async () => {
   const { data, error } = await supabase.from("members").select("*");
   return { data, error };
 };
+
 export const getAllReadyMenu = async () => {
   const { data, error } = await supabase
     .from("menu")
     .select("*")
     .eq("status", true)
-    .order("name", { ascending: true });
+    .order("price", { ascending: false });
   return { data, error };
 };
+
 export const addKategori = async (namaKategori = "") => {
   const { data, error } = await supabase
     .from("kategori")
@@ -115,7 +126,7 @@ export const addKategori = async (namaKategori = "") => {
         name: namaKategori,
       },
     ])
-    .select();
+    .select().order("name", { ascending: true });
   return { data, error };
 };
 export const addMembers = async (name) => {

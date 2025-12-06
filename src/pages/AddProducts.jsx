@@ -15,7 +15,7 @@ const AddProducts = () => {
 
   // Controlled form state (populate from location.state when editing)
   const [nama, setNama] = useState(dataProducts.name ?? "");
-  const [harga, setHarga] = useState(dataProducts.price ?? 0);
+  const [harga, setHarga] = useState(dataProducts.price ?? null);
   const [diskon, setDiskon] = useState(dataProducts.discount_price ?? 0);
   const [selectedKategori, setSelectedKategori] = useState(
     dataProducts.id_kategori ?? ""
@@ -153,7 +153,6 @@ const AddProducts = () => {
             placeholder="Masukkan harga"
             value={harga}
             onChange={(e) => setHarga(e.target.value)}
-            min={0}
           />
 
           <label className="label">Harga Diskon:</label>
