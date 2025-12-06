@@ -5,7 +5,8 @@ SmartPOS adalah aplikasi Point of Sale (POS) berbasis web yang modern dan respon
 ## 🚀 Fitur Utama
 
 *   **Manajemen Pesanan (Point of Sale)**:
-    *   Antarmuka kasir yang intuitif.
+    *   Antarmuka kasir yang intuitif dengan pengelompokan kategori menu.
+    *   **Pesanan Manual**: Input item kustom (misal: Ongkir) dengan harga fleksibel.
     *   Sistem keranjang belanja.
     *   Dukungan pembayaran Tunai dan QRIS.
     *   Kalkulasi kembalian otomatis.
@@ -22,7 +23,7 @@ SmartPOS adalah aplikasi Point of Sale (POS) berbasis web yang modern dan respon
 *   **Struk Digital**:
     *   Cetak struk (Print).
     *   Download struk sebagai gambar.
-    *   Bagikan struk via WhatsApp.
+    *   Bagikan struk (Share API / WhatsApp).
 *   **Laporan**:
     *   Ringkasan laporan penjualan (Fitur ini sedang dikembangkan).
 *   **Realtime Updates**:
