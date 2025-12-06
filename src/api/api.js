@@ -20,16 +20,16 @@ export const realtime = (table, loadData) => {
   };
 };
 
-export const addMenu = async (nama = "", harga = 0, kategori) => {
+export const addMenu = async (nama = "", harga = 0, kategori, diskon=0, status=true) => {
   const { data, error } = await supabase
     .from("menu")
     .insert([
       {
         name: nama,
         price: harga,
-        status: true,
+        status: status,
         id_kategori: kategori,
-        discount_price: 0,
+        discount_price: diskon,
       },
     ])
     .select();

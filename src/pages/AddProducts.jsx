@@ -15,8 +15,8 @@ const AddProducts = () => {
 
   // Controlled form state (populate from location.state when editing)
   const [nama, setNama] = useState(dataProducts.name ?? "");
-  const [harga, setHarga] = useState(dataProducts.price ?? null);
-  const [diskon, setDiskon] = useState(dataProducts.discount_price ?? 0);
+  const [harga, setHarga] = useState(dataProducts.price ?? "");
+  const [diskon, setDiskon] = useState(dataProducts.discount_price ?? "");
   const [selectedKategori, setSelectedKategori] = useState(
     dataProducts.id_kategori ?? ""
   );
@@ -83,7 +83,9 @@ const AddProducts = () => {
         const { data, error } = await addMenu(
           nama,
           Number(harga),
-          selectedKategori
+          selectedKategori,
+          Number(diskon),
+          status
         );
         if (error) {
           console.error(error);
