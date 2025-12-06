@@ -254,10 +254,10 @@ const Orders = () => {
                   menuCopy.filter((menu) => menu.id_kategori === kat.id)
                     .length > 0 && (
                     <ul
-                      className="list bg-base-100 mt-3"
+                      className="list bg-base-100 mt-3 border-b-[0.05px] border-b-accent/40 py-4"
                       key={kat.id || idxKategori}
                     >
-                      <h1 className="poppins-bold text-lg w-full px-4 pt-2">
+                      <h1 className="poppins-medium w-full mb-1">
                         {kat.nama_kategori || kat.name}:
                       </h1>
                       {menuCopy
@@ -266,7 +266,7 @@ const Orders = () => {
                           <li
                             key={menu.id || idx}
                             onClick={() => handleAddToCart(menu)}
-                            className="p-4 gap-2 flex items-center border-b-[0.5px] active:bg-base-content/30 active:text-white hover:cursor-pointer"
+                            className="p-4 gap-2 flex items-center list-row active:bg-base-content/30 active:text-white hover:cursor-pointer"
                           >
                             <div className="w-10 h-10 flex justify-center items-center poppins-bold bg-base-content rounded-lg text-base-300">
                               {menu.name
@@ -324,15 +324,15 @@ const Orders = () => {
                     </ul>
                   )
               )}
-              <ul className="list bg-base-100 mt-3">
-                <h1 className="poppins-bold text-lg w-full px-4 pt-2">
+              <ul className="list bg-base-100 mt-3 border-b-[0.05px] border-b-accent/40 py-4">
+                <h1 className="poppins-medium w-full mb-1">
                   Semua Menu:
                 </h1>
                 {menuCopy.map((menu, idx) => (
                   <li
                     key={menu.id || idx}
                     onClick={() => handleAddToCart(menu)}
-                    className="p-4 gap-2 flex items-center border-b-[0.5px] active:bg-base-content/30 active:text-white hover:cursor-pointer"
+                    className="p-4 gap-2 flex items-center list-row active:bg-base-content/30 active:text-white hover:cursor-pointer"
                   >
                     <div className="w-10 h-10 flex justify-center items-center poppins-bold bg-base-content rounded-lg text-base-300">
                       {menu.name
