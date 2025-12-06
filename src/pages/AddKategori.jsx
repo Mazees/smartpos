@@ -49,6 +49,7 @@ const AddKategori = () => {
           );
         } else {
           handleNotification("Kategori berhasil diperbarui", "success");
+          setTimeout(() => navigate(-1), 1500);
         }
       } else {
         const { data, error } = await addKategori(namaKategori);
@@ -60,6 +61,7 @@ const AddKategori = () => {
           );
         } else {
           handleNotification("Kategori berhasil ditambahkan", "success");
+          setTimeout(() => navigate(-1), 1500);
         }
       }
     } catch (err) {
@@ -114,6 +116,7 @@ const AddKategori = () => {
                   `Error: ${error?.message ?? JSON.stringify(error)}`,
                   "error"
                 );
+                setTimeout(() => navigate(-1), 1500);
               } else {
                 handleNotification("Berhasil menghapus kategori", "success");
                 setTimeout(() => navigate(-1), 1500);

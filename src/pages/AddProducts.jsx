@@ -77,6 +77,7 @@ const AddProducts = () => {
           );
         } else {
           handleNotification("Berhasil mengubah menu", "success");
+          setTimeout(() => navigate(-1), 1500);
         }
       } else {
         const { data, error } = await addMenu(
@@ -92,6 +93,7 @@ const AddProducts = () => {
           );
         } else {
           handleNotification("Menu berhasil ditambahkan", "success");
+          setTimeout(() => navigate(-1), 1500);
         }
       }
     } catch (err) {
