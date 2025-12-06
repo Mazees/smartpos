@@ -30,6 +30,9 @@ SmartPOS adalah aplikasi Point of Sale (POS) berbasis web yang modern dan respon
     *   Sinkronisasi data menu dan pesanan secara realtime menggunakan Supabase.
 *   **Autentikasi**:
     *   Login aman untuk admin/kasir.
+*   **Progressive Web App (PWA)**:
+    *   Dapat diinstal di perangkat (Android, iOS, Desktop) layaknya aplikasi native.
+    *   Pengalaman pengguna yang responsif dan cepat.
 
 ## 🛠️ Tech Stack
 

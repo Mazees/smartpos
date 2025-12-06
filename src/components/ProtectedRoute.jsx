@@ -11,13 +11,15 @@ export default function ProtectedRoute({ children }) {
   if (loading) {
     // Show nicer loading UI while we verify the session
     return (
-      <div
-        role="status"
-        aria-live="polite"
-        className="min-h-[60vh] flex items-center justify-center"
-      >
-        <Loading message="Memuat sesi..." />
-      </div>
+      <Header title="Memeriksa Sesi...">
+        <div
+          role="status"
+          aria-live="polite"
+          className="min-h-[60vh] flex items-center justify-center"
+        >
+          <Loading message="Memuat sesi..." />
+        </div>
+      </Header>
     );
   }
 
