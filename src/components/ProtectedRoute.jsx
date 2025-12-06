@@ -1,4 +1,3 @@
-import React from "react";
 import Loading from "./Loading";
 import { Navigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext"; // Impor hook yang sudah dibuat
