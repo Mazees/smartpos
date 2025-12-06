@@ -91,11 +91,8 @@ const Transaction = () => {
   const handleShare = () => {
     const node = captureRef.current;
     htmlToImage.toBlob(node).then(async function (blob) {
-      const file = new File([blob], "struk-transaksi.png", {
-        type: "image/png",
-      });
       const shareData = {
-        files: [file],
+        files: [new File([blob], `receipt-${dataOrders.id}.png`, { type: blob.type })],
       };
       if (navigator.canShare && navigator.canShare(shareData)) {
         await navigator.share(shareData);
@@ -158,7 +155,7 @@ const Transaction = () => {
             <div className="flex mt-5 justify-center w-full">
               <div
                 ref={captureRef}
-                className="flex flex-col justify-center w-sm items-center bg-[#d3d3d3] text-black p-5 rounded-lg"
+                className="flex flex-col justify-center w-full items-center bg-[#d3d3d3] text-black p-5 rounded-lg"
               >
                 <img src="/icon.png" className="size-30" alt="Burger Kudapan Logo" />
                 <h1 className="text-xl poppins-bold">BURGER KUDAPAN</h1>
