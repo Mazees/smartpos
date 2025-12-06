@@ -120,7 +120,7 @@ const Products = () => {
                   className="list bg-base-100 mt-3 border-b-[0.05px] border-b-accent/40 mx-2 py-4"
                   key={kategori.id}
                 >
-                  <h1 className="poppins-medium text-center w-full mb-1">
+                  <h1 className="poppins-bold text-lg text-center w-full mb-1">
                     {kategori.name}
                   </h1>
                   {menuItemsCopy
@@ -168,7 +168,7 @@ const Products = () => {
               )
           )}
           <ul className="list bg-base-100 mt-3 border-b-[0.05px] border-b-accent/40 mx-2 py-4">
-            <h1 className="poppins-medium text-center w-full mb-1">Semua Menu</h1>
+            <h1 className="poppins-bold text-lg text-center w-full mb-1">Semua Menu</h1>
             {menuItemsCopy.map((menu, idx) => (
               <li
                 onClick={() =>
