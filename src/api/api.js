@@ -20,7 +20,13 @@ export const realtime = (table, loadData) => {
   };
 };
 
-export const addMenu = async (nama = "", harga = 0, kategori, diskon=0, status=true) => {
+export const addMenu = async (
+  nama = "",
+  harga = 0,
+  kategori,
+  diskon = 0,
+  status = true
+) => {
   const { data, error } = await supabase
     .from("menu")
     .insert([
@@ -114,7 +120,7 @@ export const getAllReadyMenu = async () => {
     .from("menu")
     .select("*")
     .eq("status", true)
-    .order("price", { ascending: false });
+    .order("name", { ascending: true });
   return { data, error };
 };
 
@@ -126,7 +132,8 @@ export const addKategori = async (namaKategori = "") => {
         name: namaKategori,
       },
     ])
-    .select().order("name", { ascending: true });
+    .select()
+    .order("name", { ascending: true });
   return { data, error };
 };
 export const addMembers = async (name) => {

@@ -5,7 +5,7 @@ import { addMenu } from "../api/api";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Breadcrumbs from "../components/Breadcrumbs";
-import { getAllMenuOrdered, getAllKategori } from "../api/api";
+import { getAllMenu, getAllKategori } from "../api/api";
 import supabase from "../api/supabase";
 import { realtime } from "../api/api";
 
@@ -25,10 +25,7 @@ const Products = () => {
   const navigate = useNavigate();
   async function loadMenu() {
     setLoading(true);
-    const { data: dataMenu, error: errorMenu } = await getAllMenuOrdered(
-      "price",
-      false
-    );
+    const { data: dataMenu, error: errorMenu } = await getAllMenu();
     const { data: dataKategori, error: errorKategori } = await getAllKategori();
     if (errorMenu) {
       console.error(errorMenu);
