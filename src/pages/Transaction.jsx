@@ -84,29 +84,46 @@ const Transaction = () => {
 
   const handleCapture = () => {
     const node = captureRef.current;
-    htmlToImage.toPng(node).then((dataUrl) => download(dataUrl, "my-node.png"));
+    htmlToImage
+      .toPng(node)
+      .then((dataUrl) => download(dataUrl, `receipt-${dataOrders.id}.png`));
   };
-  const handleShareWhatsApp = () => {
-    const message = `*Pesanan Burger Kudapan*
-Transaksi: *#TRX-${dataOrders.id}*
-Tanggal: ${dateOrdered}
-${dataOrders.customer_name ? `Nama Pelanggan: ${dataOrders.customer_name}` : ""}
+  const handleShare = () => {
+    const node = captureRef.current;
+    htmlToImage.toBlob(node).then(async function (blob) {
+      const file = new File([blob], "struk-transaksi.png", {
+        type: "image/png",
+      });
+      const shareData = {
+        files: [file],
+      };
+      if (navigator.canShare && navigator.canShare(shareData)) {
+        await navigator.share(shareData);
+        console.log("Berhasil membagikan gambar!");
+      } else {
+        console.log("Browser tidak mendukung pembagian file ini.");
+      }
+    });
+    //     const message = `*Pesanan Burger Kudapan*
+    // Transaksi: *#TRX-${dataOrders.id}*
+    // Tanggal: ${dateOrdered}
+    // ${dataOrders.customer_name ? `Nama Pelanggan: ${dataOrders.customer_name}` : ""}
 
-Daftar Pesanan:
-${dataOrderDetails
-  .map(
-    (item) =>
-      `- ${item.name} x${item.qty} : Rp ${item.subtotal.toLocaleString(
-        "id-ID"
-      )}`
-  )
-  .join("\n")}
+    // Daftar Pesanan:
+    // ${dataOrderDetails
+    //   .map(
+    //     (item) =>
+    //       `- ${item.name} x${item.qty} : Rp ${item.subtotal.toLocaleString(
+    //         "id-ID"
+    //       )}`
+    //   )
+    //   .join("\n")}
 
-Detail Transaksi:
-Jumlah Item: ${jumlahItem} item
-Total Pembayaran: Rp ${dataOrders.total_price.toLocaleString("id-ID")}`;
-    const whatsappUrl = `whatsapp://send?text=${encodeURIComponent(message)}`;
-    window.open(whatsappUrl, "_blank");
+    // Detail Transaksi:
+    // Jumlah Item: ${jumlahItem} item
+    // Total Pembayaran: Rp ${dataOrders.total_price.toLocaleString("id-ID")}`;
+    //     const whatsappUrl = `whatsapp://send?text=${encodeURIComponent(message)}`;
+    //     window.open(whatsappUrl, "_blank");
   };
   return (
     <Header title="Transaksi">
@@ -141,9 +158,10 @@ Total Pembayaran: Rp ${dataOrders.total_price.toLocaleString("id-ID")}`;
             <div className="flex mt-5 justify-center w-full">
               <div
                 ref={captureRef}
-                className="flex flex-col justify-center w-sm items-center bg-base-300 p-5 rounded-lg"
+                className="flex flex-col justify-center w-sm items-center bg-[#d3d3d3] text-black p-5 rounded-lg"
               >
-                <h1 className="text-2xl poppins-bold">BURGER KUDAPAN</h1>
+                <img src="/icon.png" className="size-30" alt="Burger Kudapan Logo" />
+                <h1 className="text-xl poppins-bold">BURGER KUDAPAN</h1>
                 <h1 className="poppins-light text-sm">{dateOrdered}</h1>
                 <div className="w-full flex justify-between poppins-regular mt-10 text-sm">
                   <h1>Tipe Pembayaran</h1>
@@ -158,7 +176,7 @@ Total Pembayaran: Rp ${dataOrders.total_price.toLocaleString("id-ID")}`;
                   ""
                 )}
                 <div className="w-full flex flex-col border-b-[0.1px] pb-4">
-                  <h1 className="poppins-bold text-base-content/75 mt-4">
+                  <h1 className="poppins-bold mt-4">
                     Daftar Pesanan:
                   </h1>
                   {dataOrderDetails.map((item, idx) => (
@@ -200,7 +218,7 @@ Total Pembayaran: Rp ${dataOrders.total_price.toLocaleString("id-ID")}`;
                   ))}
                 </div>
                 <div className="w-full flex flex-col border-b-[0.1px] pb-4">
-                  <h1 className="poppins-bold text-base-content/75 mt-4">
+                  <h1 className="poppins-bold mt-4">
                     Detail Transaksi:
                   </h1>
                   <div className="w-full flex justify-between poppins-light text-xs mt-2">
@@ -229,10 +247,10 @@ Total Pembayaran: Rp ${dataOrders.total_price.toLocaleString("id-ID")}`;
               DOWNLOAD RECEIPT
             </button>
             <button
-              onClick={handleShareWhatsApp}
+              onClick={handleShare}
               className="btn btn-soft mt-2 w-full lg:w-sm"
             >
-              SHARE TO WHATSAPP
+              SHARE RECEIPT
             </button>
             <div className="modal-action w-full flex">
               <form method="dialog" className="w-full flex justify-center">
