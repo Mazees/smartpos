@@ -39,7 +39,7 @@ const Kategori = () => {
   return (
     <Header title="Daftar Kategori Menu">
       <button
-        className="btn btn-circle btn-lg fixed bottom-8 right-8"
+        className="btn btn-circle btn-accent btn-lg fixed z-50 bottom-8 right-8"
         onClick={() => navigate("/kelola/kategori/edit-kategori")}
       >
         +
