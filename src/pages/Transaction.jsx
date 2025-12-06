@@ -53,7 +53,7 @@ const Transaction = () => {
         : "Lunas"
     }\nKembali: Rp ${
       dataOrders.change ? dataOrders.change.toLocaleString("id-ID") : "0"
-    }<010>================================ <110>Our Menu:<QR>1#20#https://wa.me/c/6281240044516
+    }<010>================================ <110>Scan Menu:<QR>1#20#https://wa.me/c/6281240044516
     `;
 
     try {
@@ -125,8 +125,8 @@ const Transaction = () => {
   return (
     <Header title="Transaksi">
       <img
-        src="/transaction_success.png"
-        className="mx-auto my-5 w-80"
+        src="/kudapan.png"
+        className="mx-auto my-5 size-30"
         alt="success"
       />
       <h1 className="poppins-bold w-full text-center text-lg">
