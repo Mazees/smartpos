@@ -41,7 +41,7 @@ const Orders = () => {
   };
 
   useEffect(() => {
-    setMenuCopy([...menu]);
+    setMenuCopy([...menu].sort((a, b) => b.price-a.price));
   }, [menu]);
   useEffect(() => {
     console.log(cart);

@@ -51,7 +51,7 @@ const Products = () => {
   }
 
   useEffect(() => {
-    setMenuItemsCopy([...menuItems]);
+    setMenuItemsCopy([...menuItems].sort((a, b) => b.price-a.price));
   }, [menuItems]);
 
   useEffect(() => {
