@@ -6,6 +6,21 @@ const API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
 console.log(API_KEY);
 const ai = new GoogleGenAI({ apiKey: API_KEY });
 
+async function listSupportedModels() {
+  try {
+    console.log("Mengecek model yang tersedia di akun Anda...\n");
+
+    // Panggil method listModels()
+    const response = await ai.models.list();
+
+    // Hasilnya adalah array dari object model
+    const models = response.models;
+    console.log(response);
+  } catch (error) {
+    console.error("Terjadi error saat mengambil daftar model:", error.message);
+  }
+}
+
 export async function fetchAI(pesanan) {
   const result = await getAllMenu();
   if (result.error) {
@@ -60,13 +75,9 @@ Format output jika ada error (misalnya item ambigu atau tidak ditemukan):
 Pesan pelanggan:
 ${pesanan}
   `;
-
-  console.log(prompt);
-
   try {
-    if (status) status.loading = true;
     const result = await ai.models.generateContent({
-      model: "gemini-2.5-flash-lite",
+      model: "gemma-3n-e4b-it",
       contents: prompt,
     });
     let text = result.text;
@@ -75,11 +86,21 @@ ${pesanan}
       .replace(/^```json\s*/i, "")
       .replace(/\s*```$/, "");
     console.log(text);
+    await listSupportedModels();
     const data = JSON.parse(text);
-    if (status) status.loading = false;
-    return data;
+    if (data.error) {
+      return {
+        isError: true,
+        msg: `${data.error}: ${data.message || ""}`,
+        data: null,
+      };
+    }
+    return { isError: false, msg: null, data: data };
   } catch (error) {
-    if (status) status.loading = false;
-    return { isError: true, msg: error };
+    return {
+      isError: true,
+      msg: error.message,
+      data: null,
+    };
   }
 }

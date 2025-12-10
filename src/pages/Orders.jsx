@@ -7,7 +7,7 @@ import Header from "../components/Header";
 import Breadcrumbs from "../components/Breadcrumbs";
 import { CartContext } from "../contexts/CartContext";
 import Alert from "../components/Alert";
-import { fetchAI } from "../api/gemini";
+import { fetchAI } from "../api/ai";
 
 const Orders = () => {
   const [kategori, setKategori] = useState([]);
@@ -34,7 +34,12 @@ const Orders = () => {
   const handleSmartOrder = async (e) => {
     e.preventDefault();
     setLoadingSmartOrder(true);
-    const result = await fetchAI(smartOrder);
+    const { isError, msg, data: result } = await fetchAI(smartOrder);
+    if (isError) {
+      handleNotification(msg, "error");
+      setLoadingSmartOrder(false);
+      return;
+    }
     if (result.error) {
       handleNotification(`${result.error}: ${result.message}`, "error");
       setLoadingSmartOrder(false);
