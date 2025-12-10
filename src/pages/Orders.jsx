@@ -29,7 +29,7 @@ const Orders = () => {
   });
   const handleNotification = (message, variant) => {
     setNotification({ message, variant });
-    setTimeout(() => setNotification({}), 1500);
+    setTimeout(() => setNotification({}), 2500);
   };
   const handleSmartOrder = async (e) => {
     e.preventDefault();
@@ -37,6 +37,8 @@ const Orders = () => {
     const result = await fetchAI(smartOrder);
     if (result.error) {
       handleNotification(`${result.error}: ${result.message}`, "error");
+      setLoadingSmartOrder(false);
+      return;
     }
     setCart(result.result);
     navigate("/keranjang");
