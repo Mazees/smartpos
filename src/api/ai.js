@@ -1,5 +1,5 @@
 import { GoogleGenAI } from "@google/genai";
-import { getAllMenu } from "./api";
+import { getAllReadyMenu } from "./api";
 
 // ⚠️ Ganti dengan API key kamu sendiri
 const API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
@@ -22,7 +22,7 @@ async function listSupportedModels() {
 }
 
 export async function fetchAI(pesanan) {
-  const result = await getAllMenu();
+  const result = await getAllReadyMenu();
   if (result.error) {
     console.log(result.error);
     return;
@@ -42,8 +42,9 @@ product_id, qty
 4. Cocokkan nama makanan/minuman dengan menu di atas.
 5. Jika pelanggan memberi catatan (misal: “tidak pedas”, “jangan terlalu manis”), masukkan ke note.
 6. Jika pelanggan menyebut item yang ambigu (contoh: “burger” padahal ada beberapa jenis), kembalikan response error, pesan error isi dengan bahasa manusiawi. Sertakan nama menu jangan id menu yak di pesan error. Beri tanda seru di akhir.
-7. Contoh pesan error: "Maaf ada 2 menu burger yaitu burger premium dan burger medium. Mohon sebutkan pilihan burger yang anda inginkan!"
-8. Jangan berikan penjelasan dan teks apapun, cukup berikan output JSON
+7. Jika salah satu status menu yg dipilih tidak ada, kembalikan response error "Item Not Found".
+8. Contoh pesan error: "Maaf ada 2 menu burger yaitu burger premium dan burger medium. Mohon sebutkan pilihan burger yang anda inginkan!"
+9. Jangan berikan penjelasan dan teks apapun, cukup berikan output JSON
 
 
 Format output jika tidak ada error:
@@ -75,6 +76,7 @@ Format output jika ada error (misalnya item ambigu atau tidak ditemukan):
 Pesan pelanggan:
 ${pesanan}
   `;
+console.log(prompt)
   try {
     const result = await ai.models.generateContent({
       model: "gemma-3n-e4b-it",
