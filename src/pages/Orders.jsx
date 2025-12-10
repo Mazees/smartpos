@@ -442,7 +442,7 @@ const Orders = () => {
             </form>
           )}
           {page === 2 && (
-            <div className="flex flex-col mx-auto w-full justify-center py-10 opacity-50 poppins-regular">
+            <div className="flex flex-col mx-auto w-full justify-center pt-4 opacity-50 poppins-regular">
               <h1 className="poppins-bold text-lg">SMART-ORDER</h1>
               <h2 className="poppins-regular text-sm mb-3">
                 Fitur Pesanan Berbasis AI
@@ -460,7 +460,7 @@ const Orders = () => {
                 <button
                   type="submit"
                   disabled={loadingSmartOrder}
-                  className="btn lg:w-lg w-full mt-5"
+                  className="btn lg:w-lg w-full mt-5 poppins-bold"
                 >
                   {loadingSmartOrder ? "Loading..." : "PESAN SEKARANG"}
                 </button>
