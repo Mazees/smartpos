@@ -1,18 +1,20 @@
-import React, { useEffect } from "react";
 import Header from "../components/Header";
 import Breadcrumbs from "../components/Breadcrumbs";
 import { useLocation, useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { CartContext } from "../contexts/CartContext";
 import { useContext } from "react";
+import WarningModal from "../components/WarningModal";
 
 const DetailOrders = () => {
   const { cart, setCart } = useContext(CartContext);
+  const isFirst = useRef(true);
   const navigate = useNavigate();
   const location = useLocation();
   const [dataOrder, setDataOrder] = useState(location.state || null);
   const [quantity, setQuantity] = useState(dataOrder.qty);
   const [notes, setNotes] = useState(dataOrder.note);
+  const [indexCart, setIndexCart] = useState(dataOrder.idx);
   const updateHandle = () => {
     setCart((prev) => {
       const updated = [...prev];
@@ -20,21 +22,31 @@ const DetailOrders = () => {
         dataOrder.discount_price && dataOrder.discount_price !== 0
           ? dataOrder.discount_price
           : dataOrder.original_price;
-      updated[dataOrder.idx] = {
-        ...updated[dataOrder.idx],
+      updated[indexCart] = {
+        ...updated[indexCart],
         qty: quantity,
         note: notes,
         subtotal: quantity * activePrice,
       };
       return updated;
     });
-    navigate(-1);
   };
   useEffect(() => {
     if (quantity <= 0) {
       setQuantity(1);
     }
   }, [quantity]);
+  useEffect(() => {
+    if (isFirst.current) {
+      isFirst.current = false;
+      return; // skip efek pertama kali
+    }
+    if (cart.length == 0) {
+      navigate("/");
+    } else {
+      navigate(-1);
+    }
+  }, [cart]);
   return (
     <Header title="Detail Pesanan">
       {dataOrder ? (
@@ -79,6 +91,18 @@ const DetailOrders = () => {
               +
             </button>
           </div>
+          <WarningModal
+            title="Hapus Pesanan"
+            message="Apakah Anda yakin ingin menghapus pesanan ini?"
+            modalId="my_modal_6"
+            onConfirm={async () => {
+              setCart((prev) => prev.filter((_, i) => i !== indexCart));
+            }}
+          >
+            <span className="btn btn-error text-white w-full mt-5">
+              HAPUS PESANAN
+            </span>
+          </WarningModal>
           <button className="btn w-full mt-5" onClick={updateHandle}>
             SIMPAN
           </button>
