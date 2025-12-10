@@ -7,6 +7,7 @@ import Header from "../components/Header";
 import Breadcrumbs from "../components/Breadcrumbs";
 import { CartContext } from "../contexts/CartContext";
 import Alert from "../components/Alert";
+import { fetchAI } from "../api/gemini";
 
 const Orders = () => {
   const [kategori, setKategori] = useState([]);
@@ -17,9 +18,11 @@ const Orders = () => {
   const [totalHarga, setTotalHarga] = useState(0);
   const [jumlahItem, setJumlahItem] = useState(0);
   const [menu, setMenu] = useState([]);
-  const [defaultChecked, setDefaultChecked] = useState(true);
+  const [page, setPage] = useState(0);
   const [menuCopy, setMenuCopy] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [smartOrder, setSmartOrder] = useState();
+  const [loadingSmartOrder, setLoadingSmartOrder] = useState(false);
   const [notification, setNotification] = useState({
     message: "",
     variant: "warning",
@@ -27,6 +30,17 @@ const Orders = () => {
   const handleNotification = (message, variant) => {
     setNotification({ message, variant });
     setTimeout(() => setNotification({}), 1500);
+  };
+  const handleSmartOrder = async (e) => {
+    e.preventDefault();
+    setLoadingSmartOrder(true);
+    const result = await fetchAI(smartOrder);
+    if (result.error) {
+      handleNotification(`${result.error}: ${result.message}`, "error");
+    }
+    setCart(result.result);
+    navigate("/keranjang");
+    setLoadingSmartOrder(false);
   };
   const loadData = async () => {
     setLoading(true);
@@ -41,7 +55,7 @@ const Orders = () => {
   };
 
   useEffect(() => {
-    setMenuCopy([...menu].sort((a, b) => b.price-a.price));
+    setMenuCopy([...menu].sort((a, b) => b.price - a.price));
   }, [menu]);
   useEffect(() => {
     console.log(cart);
@@ -125,24 +139,33 @@ const Orders = () => {
         </div>
       ) : (
         <>
-          <div className="tabs tabs-box">
+          <div className="tabs tabs-box flex-nowrap overflow-x-scroll scrollbar-hidden p-1">
             <input
               type="radio"
               name="my_tabs_1"
-              className="tab w-1/2"
+              className="tab flex-1 w-10"
               aria-label="Daftar Menu"
-              defaultChecked
-              onChange={() => setDefaultChecked(true)}
+              checked={page === 0}
+              onChange={() => setPage(0)}
             />
             <input
               type="radio"
               name="my_tabs_1"
-              className="tab w-1/2"
+              className="tab flex-1 w-10"
               aria-label="Pesanan Manual"
-              onChange={() => setDefaultChecked(false)}
+              checked={page === 1}
+              onChange={() => setPage(1)}
+            />
+            <input
+              type="radio"
+              name="my_tabs_1"
+              className="tab flex-1 w-10"
+              aria-label="SmartOrder (AI)"
+              checked={page === 2}
+              onChange={() => setPage(2)}
             />
           </div>
-          {defaultChecked ? (
+          {page === 0 && (
             <>
               <div className="py-4 opacity-60 tracking-wide poppins-regular">
                 Semua Daftar Menu:
@@ -325,9 +348,7 @@ const Orders = () => {
                   )
               )}
               <ul className="list bg-base-100 mt-3 border-b-[0.05px] border-b-accent/40 py-4">
-                <h1 className="poppins-medium w-full mb-1">
-                  Semua Menu:
-                </h1>
+                <h1 className="poppins-medium w-full mb-1">Semua Menu:</h1>
                 {menuCopy.map((menu, idx) => (
                   <li
                     key={menu.id || idx}
@@ -377,7 +398,8 @@ const Orders = () => {
                 ))}
               </ul>
             </>
-          ) : (
+          )}
+          {page === 1 && (
             <form
               className="flex flex-col w-full py-5"
               onSubmit={handleManualSubmit}
@@ -411,6 +433,32 @@ const Orders = () => {
                 </button>
               </fieldset>
             </form>
+          )}
+          {page === 2 && (
+            <div className="flex flex-col mx-auto w-full justify-center py-10 opacity-50 poppins-regular">
+              <h1 className="poppins-bold text-lg">SMART-ORDER</h1>
+              <h2 className="poppins-regular text-sm mb-3">
+                Fitur Pesanan Berbasis AI
+              </h2>
+              <form className="flex flex-col" onSubmit={handleSmartOrder}>
+                <textarea
+                  className="textarea w-full lg:w-lg"
+                  placeholder="Masukkan Pesanan/Tempelkan Pesanan Disini"
+                  required
+                  value={smartOrder}
+                  onChange={(e) => {
+                    setSmartOrder(e.target.value);
+                  }}
+                ></textarea>
+                <button
+                  type="submit"
+                  disabled={loadingSmartOrder}
+                  className="btn lg:w-lg w-full mt-5"
+                >
+                  {loadingSmartOrder ? "Loading..." : "PESAN SEKARANG"}
+                </button>
+              </form>
+            </div>
           )}
         </>
       )}
