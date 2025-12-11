@@ -17,7 +17,7 @@ SmartPOS adalah aplikasi Point of Sale (POS) berbasis web yang modern dan respon
 *   **Riwayat Penjualan**:
     *   Melihat daftar riwayat penjualan.
     *   Detail transaksi lengkap.
-*   **Smart Order AI (Segera Hadir)**:
+*   **Smart Order (AI)**:
     *   Input pesanan melalui teks natural yang diproses oleh AI (misal: "2 Burger dan 1 Es Teh").
     *   Konversi otomatis dari teks langsung ke keranjang belanja.
 *   **Struk Digital**:
