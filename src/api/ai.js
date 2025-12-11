@@ -1,25 +1,4 @@
-import { GoogleGenAI } from "@google/genai";
 import { getAllReadyMenu } from "./api";
-
-// ⚠️ Ganti dengan API key kamu sendiri
-const API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
-console.log(API_KEY);
-const ai = new GoogleGenAI({ apiKey: API_KEY });
-
-async function listSupportedModels() {
-  try {
-    console.log("Mengecek model yang tersedia di akun Anda...\n");
-
-    // Panggil method listModels()
-    const response = await ai.models.list();
-
-    // Hasilnya adalah array dari object model
-    const models = response.models;
-    console.log(response);
-  } catch (error) {
-    console.error("Terjadi error saat mengambil daftar model:", error.message);
-  }
-}
 
 export async function fetchAI(pesanan) {
   const result = await getAllReadyMenu();
@@ -45,6 +24,7 @@ product_id, qty
 7. Jika salah satu status menu yg dipilih tidak ada, kembalikan response error "Item Not Found".
 8. Contoh pesan error: "Maaf ada 2 menu burger yaitu burger premium dan burger medium. Mohon sebutkan pilihan burger yang anda inginkan!"
 9. Jangan berikan penjelasan dan teks apapun, cukup berikan output JSON
+10. AKU HANYA MINTA KAMU MENGIRIMKAN FORMAT JSON TANPA PENJELASAN DAN TEKS
 
 
 Format output jika tidak ada error:
@@ -76,19 +56,23 @@ Format output jika ada error (misalnya item ambigu atau tidak ditemukan):
 Pesan pelanggan:
 ${pesanan}
   `;
-console.log(prompt)
   try {
-    const result = await ai.models.generateContent({
-      model: "gemma-3n-e4b-it",
-      contents: prompt,
+    const res = await fetch("/.netlify/functions/chat-groq", {
+      method: "POST",
+      body: JSON.stringify({ message: prompt }),
     });
+    if (!res.ok) {
+      throw new Error(
+        `Network response was not ok: ${res.status} ${res.statusText}`
+      );
+    }
+    const result = await res.json();
     let text = result.text;
     text = text
       .trim()
       .replace(/^```json\s*/i, "")
       .replace(/\s*```$/, "");
-    console.log(text);
-    await listSupportedModels();
+
     const data = JSON.parse(text);
     if (data.error) {
       return {

@@ -36,4 +36,9 @@ export default defineConfig({
       },
     }),
   ],
+  server: {
+    proxy: {
+      "/.netlify/functions": "http://localhost:8888",
+    },
+  },
 });
