@@ -23,6 +23,7 @@ const Orders = () => {
   const [loading, setLoading] = useState(false);
   const [smartOrder, setSmartOrder] = useState();
   const [loadingSmartOrder, setLoadingSmartOrder] = useState(false);
+  const [smartOrderError, setSmartOrderError] = useState("");
   const [notification, setNotification] = useState({
     message: "",
     variant: "warning",
@@ -36,15 +37,16 @@ const Orders = () => {
     setLoadingSmartOrder(true);
     const { isError, msg, data: result } = await fetchAI(smartOrder);
     if (isError) {
-      handleNotification(msg, "error");
+      setSmartOrderError(msg);
       setLoadingSmartOrder(false);
       return;
     }
     if (result.error) {
-      handleNotification(`${result.error}: ${result.message}`, "error");
+      setSmartOrder(result.error);
       setLoadingSmartOrder(false);
       return;
     }
+    setSmartOrderError("");
     setCart(result.result);
     navigate("/keranjang");
     setLoadingSmartOrder(false);
@@ -457,6 +459,13 @@ const Orders = () => {
                     setSmartOrder(e.target.value);
                   }}
                 ></textarea>
+                {smartOrderError ? (
+                  <p className="poppins-regular-italic text-sm mt-3 lg:w-lg w-full text-red-600 flex flex-row">
+                    ✦ {smartOrderError}
+                  </p>
+                ) : (
+                  ""
+                )}
                 <button
                   type="submit"
                   disabled={loadingSmartOrder}
