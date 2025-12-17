@@ -40,9 +40,7 @@ const Payment = () => {
     const node = captureRef.current;
     htmlToImage.toBlob(node).then(async function (blob) {
       const shareData = {
-        files: [
-          new File([blob], `payment-qris.png`, { type: blob.type }),
-        ],
+        files: [new File([blob], `payment-qris.png`, { type: blob.type })],
         title: "QRIS",
         text: `Mohon Bayar Sebesar: Rp ${totalHarga.toLocaleString("id-ID")}`,
       };
@@ -74,7 +72,9 @@ const Payment = () => {
           QRIS
         </a>
       </div>
-      <h1 className="poppins-bold mt-5">Total Pembayaran: Rp {totalHarga.toLocaleString("id-ID")}</h1>
+      <h1 className="poppins-bold mt-5">
+        Total Pembayaran: Rp {totalHarga.toLocaleString("id-ID")}
+      </h1>
       {page === 1 ? (
         <form className="w-full lg:w-1/2">
           <fieldset className="fieldset">
@@ -166,12 +166,15 @@ const Payment = () => {
           >
             BAGIKAN QRIS
           </button>
-          <img
+          <div
             ref={captureRef}
-            className="rounded-3xl my-5 lg:w-[300px] mx-auto w-full"
-            src="/qris.png"
-            alt="QRIS"
-          />
+            className="bg-secondary rounded-4xl p-3 lg:w-[300px] overflow-hidden flex flex-col items-center  justify-center"
+          >
+            <div className="poppins-regular text-primary-content mb-2">
+              Mohon Bayar Sebesar: Rp {totalHarga.toLocaleString("id-ID")}
+            </div>
+            <img className="w-full rounded-4xl" src="/qris.png" alt="QRIS" />
+          </div>
           <button
             onClick={async () => {
               const { data: orders, error } = await addOrders(
