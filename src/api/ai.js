@@ -15,46 +15,51 @@ ${JSON.stringify(allMenu)}
 
 Tugasmu:
 1. Terjemahkan pesan pelanggan menjadi list item pesanan.
-2. Setiap item harus memiliki:
-product_id, qty
+2. Setiap item harus memiliki: product_id, qty.
 3. note (opsional, string kosong jika tidak ada).
-4. Cocokkan nama makanan/minuman dengan menu di atas.
-5. Jika pelanggan memberi catatan (misal: “tidak pedas”, “jangan terlalu manis”), masukkan ke note.
-6. Jika pelanggan menyebut item yang ambigu (contoh: “burger” padahal ada beberapa jenis), kembalikan response error, pesan error isi dengan bahasa manusiawi. Sertakan nama menu jangan id menu yak di pesan error. Beri tanda seru di akhir.
-7. Jika salah satu status menu yg dipilih tidak ada, kembalikan response error "Item Not Found".
-8. Contoh pesan error: "Maaf ada beberapa varian burger. Mohon sebutkan pilihan burger yang anda inginkan!"
-9. Jangan berikan penjelasan dan teks apapun, cukup berikan output JSON
+4. **LOGIKA PENCOCOKAN (URUTAN PRIORITAS):**
+   A. **Normalisasi & Typo:** Anggap "Ham Burger", "Hamburgr", atau "Ham-burger" sama dengan "Hamburger". Abaikan perbedaan spasi.
+   B. **Cek Exact Match (Setelah Normalisasi):** Jika input (setelah spasi diabaikan) cocok 100% dengan nama menu, PILIH ITU.
+   C. **ATURAN EKSKLUSI VARIAN (SANGAT PENTING):**
+      - Kasus: Ada menu "Hamburger" dan "Hamburger Cheese".
+      - Input user: "Ham Burger" (Tanpa kata "Cheese").
+      - Logika: Karena user TIDAK mengetik kata "Cheese", kamu DILARANG memilih "Hamburger Cheese". Kamu WAJIB memilih "Hamburger" biasa.
+      - Prinsip: Pilih nama menu yang paling pendek yang terkandung dalam input user, kecuali user secara spesifik menyebut kata tambahan (seperti "Cheese", "Jumbo", "Special").
+   D. **Ambigu:** Return error "Ambiguous item" HANYA JIKA input benar-benar bisa merujuk ke dua menu berbeda yang bukan hubungan induk-varian (misal: "Kopi" padahal ada "Kopi Hitam" dan "Kopi Susu" -> ini ambigu karena tidak ada menu bernama cuma "Kopi").
+
+5. Jika pelanggan memberi catatan (misal: “tidak pedas”), masukkan ke note.
+6. Format Error: Jika ambigu atau tidak ketemu, return JSON error.
+7. Output HANYA JSON.
 
 Format output jika tidak ada error:
-
 {
  "error": null,
  "message": null,
  "result": [
   {
-    menu_id: menu.id,
-    name: menu.name,
-    original_price: menu.price,
-    discount_price: menu.discount_price || 0,
-    qty: kuantitinya,
-    note: "catatan tiap menu",
-    subtotal: menu.discount_price && menu.discount_price !== 0 ? menu.discount_price : menu.price,
-    }
+   menu_id: menu.id,
+   name: menu.name,
+   original_price: menu.price,
+   discount_price: menu.discount_price || 0,
+   qty: kuantitas,
+   note: "catatan",
+   subtotal: menu.discount_price || menu.price,
+   }
  ]
 }
 
-Format output jika ada error (misalnya item ambigu atau tidak ditemukan):
-
+Format output jika ada error:
 {
- "error": "Ambiguous item", "Item not found", "Out of stock",
- "message": "Penjelasan error",
+ "error": "Ambiguous item" | "Item not found",
+ "message": "Sebutkan nama menu (bukan ID) yang bikin bingung",
  "result": []
 }
 
 Pesan pelanggan:
 ${pesanan}
-  `;
+`;
   try {
+    console.log(prompt);
     const res = await fetch("/.netlify/functions/chat-groq", {
       method: "POST",
       body: JSON.stringify({ message: prompt }),

@@ -107,26 +107,6 @@ const Transaction = () => {
         console.log("Browser tidak mendukung pembagian file ini.");
       }
     });
-    //     const message = `*Pesanan Burger Kudapan*
-    // Transaksi: *#TRX-${dataOrders.id}*
-    // Tanggal: ${dateOrdered}
-    // ${dataOrders.customer_name ? `Nama Pelanggan: ${dataOrders.customer_name}` : ""}
-
-    // Daftar Pesanan:
-    // ${dataOrderDetails
-    //   .map(
-    //     (item) =>
-    //       `- ${item.name} x${item.qty} : Rp ${item.subtotal.toLocaleString(
-    //         "id-ID"
-    //       )}`
-    //   )
-    //   .join("\n")}
-
-    // Detail Transaksi:
-    // Jumlah Item: ${jumlahItem} item
-    // Total Pembayaran: Rp ${dataOrders.total_price.toLocaleString("id-ID")}`;
-    //     const whatsappUrl = `whatsapp://send?text=${encodeURIComponent(message)}`;
-    //     window.open(whatsappUrl, "_blank");
   };
   return (
     <Header title="Transaksi">

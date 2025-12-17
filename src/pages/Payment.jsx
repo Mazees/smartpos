@@ -1,13 +1,15 @@
 import Header from "../components/Header";
 import Breadcrumbs from "../components/Breadcrumbs";
-import { useState, useContext, useEffect, use } from "react";
+import { useState, useContext, useEffect, use, useRef } from "react";
 import { CartContext } from "../contexts/CartContext";
 import { useNavigate, useLocation } from "react-router-dom";
 import Alert from "../components/Alert";
+import * as htmlToImage from "html-to-image";
 import { addOrderDetails, addOrders, addMembers } from "../api/api";
 
 const Payment = () => {
   const [page, setPage] = useState(1);
+  const captureRef = useRef();
   const { cart, setCart } = useContext(CartContext);
   const navigate = useNavigate();
   const location = useLocation();
@@ -34,6 +36,25 @@ const Payment = () => {
     if (cart.length === 0) navigate("/");
   }, [cart]);
 
+  const handleShare = () => {
+    const node = captureRef.current;
+    htmlToImage.toBlob(node).then(async function (blob) {
+      const shareData = {
+        files: [
+          new File([blob], `payment-qris.png`, { type: blob.type }),
+        ],
+        title: "QRIS",
+        text: `Mohon Bayar Sebesar: Rp ${totalHarga.toLocaleString("id-ID")}`,
+      };
+      if (navigator.canShare && navigator.canShare(shareData)) {
+        await navigator.share(shareData);
+        console.log("Berhasil membagikan gambar!");
+      } else {
+        console.log("Browser tidak mendukung pembagian file ini.");
+      }
+    });
+  };
+
   return (
     <Header title="Pembayaran">
       <Alert message={notification.message} variant={notification.variant} />
@@ -53,8 +74,9 @@ const Payment = () => {
           QRIS
         </a>
       </div>
+      <h1 className="poppins-bold mt-5">Total Pembayaran: Rp {totalHarga.toLocaleString("id-ID")}</h1>
       {page === 1 ? (
-        <form className="w-full mt-5 lg:w-1/2 mx-auto">
+        <form className="w-full lg:w-1/2">
           <fieldset className="fieldset">
             <legend className="fieldset-legend w-full">
               Berapa uang pelanggan?
@@ -137,8 +159,15 @@ const Payment = () => {
           </button>
         </form>
       ) : page == 2 ? (
-        <div className="w-full">
+        <div className="w-full flex flex-col items-center">
+          <button
+            onClick={handleShare}
+            className="btn w-full lg:w-[300px] mx-auto poppins-bold mt-3"
+          >
+            BAGIKAN QRIS
+          </button>
           <img
+            ref={captureRef}
             className="rounded-3xl my-5 lg:w-[300px] mx-auto w-full"
             src="/qris.png"
             alt="QRIS"
