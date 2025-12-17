@@ -168,10 +168,10 @@ const Payment = () => {
           </button>
           <div
             ref={captureRef}
-            className="bg-secondary rounded-4xl p-3 lg:w-[300px] overflow-hidden flex flex-col items-center  justify-center"
+            className="bg-secondary rounded-4xl px-2 py-4 lg:w-[300px] overflow-hidden flex flex-col items-center  justify-center"
           >
-            <div className="poppins-regular text-primary-content mb-2">
-              Mohon Bayar Sebesar: Rp {totalHarga.toLocaleString("id-ID")}
+            <div className="poppins-regular text-primary-content mb-4 flex flex-col items-center">
+              Mohon Bayar Sebesar: <span className="poppins-bold text-warning text-lg">Rp {totalHarga.toLocaleString("id-ID")}</span>
             </div>
             <img className="w-full rounded-4xl" src="/qris.png" alt="QRIS" />
           </div>
