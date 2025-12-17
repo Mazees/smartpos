@@ -159,7 +159,7 @@ const Payment = () => {
           </button>
         </form>
       ) : page == 2 ? (
-        <div className="w-full flex flex-col items-center">
+        <div className="w-full flex flex-col gap-5 items-center">
           <button
             onClick={handleShare}
             className="btn w-full lg:w-[300px] mx-auto poppins-bold mt-3"
