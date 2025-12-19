@@ -97,6 +97,66 @@ export const deleteMenu = async (id) => {
   return { data, error };
 };
 
+// --- Varian ---
+export const getAllVariant = async () => {
+  const { data, error } = await supabase.from("variant").select("*");
+  if (error) throw error;
+  return data;
+};
+
+export const addVariant = async (
+  name,
+  desc,
+  required,
+  multiple,
+  options = []
+) => {
+  const { data, error } = await supabase
+    .from("variant")
+    .insert([
+      {
+        name: name,
+        desc: desc,
+        required: required,
+        multiple: multiple,
+        options: options,
+      },
+    ])
+    .select();
+  return { data, error };
+};
+export const updateVariant = async (
+  id,
+  name,
+  desc,
+  required,
+  multiple,
+  options = []
+) => {
+  const { data, error } = await supabase
+    .from("variant")
+    .update([
+      {
+        name: name,
+        desc: desc,
+        required: required,
+        multiple: multiple,
+        options: options,
+      },
+    ])
+    .eq("id", id)
+    .select();
+  return { data, error };
+};
+export const deleteVariant = async (id) => {
+  const { data, error } = await supabase
+    .from("variant")
+    .delete()
+    .eq("id", id)
+    .select();
+  return { data, error };
+};
+
 // --- Kategori ---
 export const getAllKategori = async () => {
   const { data, error } = await supabase.from("kategori").select("*");

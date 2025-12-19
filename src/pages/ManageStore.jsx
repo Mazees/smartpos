@@ -1,6 +1,11 @@
 import ListNav from "../components/ListNav";
 import Breadcrumbs from "../components/Breadcrumbs";
-import { getAllKategori, getAllMenu, realtime } from "../api/api";
+import {
+  getAllKategori,
+  getAllMenu,
+  getAllVariant,
+  realtime,
+} from "../api/api";
 import { useEffect, useState } from "react";
 import Alert from "../components/Alert";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -9,7 +14,6 @@ const ManageStore = () => {
   const queryClient = useQueryClient();
   const {
     data: kategori = [],
-    isLoading,
     isError: isKategoriError,
     error: kategoriError,
   } = useQuery({ queryKey: ["kategori"], queryFn: getAllKategori });
@@ -18,7 +22,12 @@ const ManageStore = () => {
     isLoading: loading,
     isError: isMenuError,
     error: menuError,
-  } = useQuery({ queryKey: ["readyMenu"], queryFn: getAllMenu });
+  } = useQuery({ queryKey: ["menu"], queryFn: getAllMenu });
+  const {
+    data: variant = [],
+    isError: isVariantError,
+    error: variantError,
+  } = useQuery({ queryKey: ["variant"], queryFn: getAllVariant });
   useEffect(() => {
     if (menuError) {
       console.error(menuError);
@@ -26,11 +35,17 @@ const ManageStore = () => {
     if (kategoriError) {
       console.error(kategoriError);
     }
+    if (isVariantError) {
+      console.error(kategoriError);
+    }
     const unsubMenu = realtime("menu", () => {
-      queryClient.invalidateQueries({ queryKey: ["readyMenu"] });
+      queryClient.invalidateQueries({ queryKey: ["menu"] });
     });
     const unsubKategori = realtime("kategori", () => {
       queryClient.invalidateQueries({ queryKey: ["kategori"] });
+    });
+    const unsubVariant = realtime("variant", () => {
+      queryClient.invalidateQueries({ queryKey: ["variant"] });
     });
     return () => {
       unsubMenu();
@@ -41,6 +56,9 @@ const ManageStore = () => {
     <>
       <ListNav to="/kelola/daftar-menu" desc={`${menu.length} Menu`}>
         Daftar Menu
+      </ListNav>
+      <ListNav to="/kelola/varian" desc={`${variant.length} Varian Menu`}>
+        Daftar Varian
       </ListNav>
       <ListNav to="/kelola/kategori" desc={`${kategori.length} Kategori`}>
         Daftar Kategori

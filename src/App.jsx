@@ -162,7 +162,7 @@ function App() {
                 }
               />
               <Route
-                path="/kelola/daftar-menu/tambah-varian"
+                path="/kelola/varian/tambah-varian"
                 element={
                   <ProtectedRoute>
                     <Header title="Tambah Varian">
