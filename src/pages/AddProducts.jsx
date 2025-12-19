@@ -1,5 +1,4 @@
 import React, { useEffect } from "react";
-import Header from "../components/Header";
 import Breadcrumbs from "../components/Breadcrumbs";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useState } from "react";
@@ -134,7 +133,7 @@ const AddProducts = () => {
     });
   }, []);
   return (
-    <Header title="Edit/Tambah Menu">
+    <>
       <fieldset className="fieldset bg-base-200 border-base-300 rounded-box w-full h-full border p-4">
         {notification.message && (
           <Alert
@@ -230,7 +229,7 @@ const AddProducts = () => {
           ""
         )}
       </fieldset>
-    </Header>
+    </>
   );
 };
 

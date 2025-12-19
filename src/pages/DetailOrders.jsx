@@ -1,4 +1,3 @@
-import Header from "../components/Header";
 import Breadcrumbs from "../components/Breadcrumbs";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
@@ -48,7 +47,7 @@ const DetailOrders = () => {
     }
   }, [cart]);
   return (
-    <Header title="Detail Pesanan">
+    <>
       {dataOrder ? (
         <>
           <h1 className="poppins-bold text-xl mt-5">{dataOrder.name}</h1>
@@ -110,7 +109,7 @@ const DetailOrders = () => {
       ) : (
         <div className="p-6 text-center opacity-60">Keranjang kosong</div>
       )}
-    </Header>
+    </>
   );
 };
 

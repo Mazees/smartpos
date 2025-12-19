@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import Header from "../components/Header";
 import Breadcrumbs from "../components/Breadcrumbs";
 import Loading from "../components/Loading";
 import { getAllKategori, realtime } from "../api/api";
@@ -43,7 +42,7 @@ const Kategori = () => {
     });
   }, []);
   return (
-    <Header title="Daftar Kategori Menu">
+    <>
       {notification.message && (
         <Alert message={notification.message} variant={notification.variant} />
       )}
@@ -113,7 +112,7 @@ const Kategori = () => {
           </ul>
         </>
       )}
-    </Header>
+    </>
   );
 };
 

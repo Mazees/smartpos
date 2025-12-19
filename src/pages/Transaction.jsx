@@ -1,5 +1,4 @@
 import { useState, useRef, useEffect, useContext } from "react";
-import Header from "../components/Header";
 import Breadcrumbs from "../components/Breadcrumbs";
 import * as htmlToImage from "html-to-image";
 import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
@@ -109,7 +108,7 @@ const Transaction = () => {
     });
   };
   return (
-    <Header title="Transaksi">
+    <>
       <img src="/kudapan.png" className="mx-auto my-5 size-30" alt="success" />
       <h1 className="poppins-bold w-full text-center text-lg">
         Transaksi Berhasil!
@@ -270,7 +269,7 @@ const Transaction = () => {
           BUAT PESANAN BARU
         </NavLink>
       </div>
-    </Header>
+    </>
   );
 };
 

@@ -1,4 +1,3 @@
-import Header from "../components/Header";
 import Loading from "../components/Loading";
 import Alert from "../components/Alert";
 import { addMenu } from "../api/api";
@@ -62,7 +61,7 @@ const Products = () => {
     console.log(menuItems);
   }, [menuItems]);
   return (
-    <Header title="Daftar Menu">
+    <>
       {notification.message && (
         <Alert message={notification.message} variant={notification.variant} />
       )}
@@ -209,7 +208,7 @@ const Products = () => {
           </ul>
         </>
       )}
-    </Header>
+    </>
   );
 };
 

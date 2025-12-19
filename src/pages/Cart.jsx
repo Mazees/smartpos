@@ -1,4 +1,3 @@
-import Header from "../components/Header";
 import Breadcrumbs from "../components/Breadcrumbs";
 import Loading from "../components/Loading";
 import { useContext, useEffect, useState } from "react";
@@ -58,7 +57,7 @@ const Cart = () => {
   };
 
   return (
-    <Header title="Keranjang Pesanan">
+    <>
       {loading ? (
         <div className="min-h-[60vh] flex items-center justify-center ">
           <Loading message="Memuat data keranjang..." />
@@ -143,7 +142,7 @@ const Cart = () => {
           </div>
         </>
       )}
-    </Header>
+    </>
   );
 };
 

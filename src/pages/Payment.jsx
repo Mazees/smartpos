@@ -1,4 +1,3 @@
-import Header from "../components/Header";
 import Breadcrumbs from "../components/Breadcrumbs";
 import { useState, useContext, useEffect, use, useRef } from "react";
 import { CartContext } from "../contexts/CartContext";
@@ -54,7 +53,7 @@ const Payment = () => {
   };
 
   return (
-    <Header title="Pembayaran">
+    <>
       <Alert message={notification.message} variant={notification.variant} />
       <div role="tablist" className="tabs tabs-box">
         <a
@@ -223,7 +222,7 @@ const Payment = () => {
       ) : (
         ""
       )}
-    </Header>
+    </>
   );
 };
 

@@ -1,4 +1,3 @@
-import Header from "../components/Header";
 import Loading from "../components/Loading";
 import Alert from "../components/Alert";
 import { useEffect, useState } from "react";
@@ -65,7 +64,7 @@ const History = () => {
   };
 
   return (
-    <Header title="Riwayat Penjualan">
+    <>
       {notification.message && (
         <Alert message={notification.message} variant={notification.variant} />
       )}
@@ -113,7 +112,7 @@ const History = () => {
           </ul>
         </>
       )}
-    </Header>
+    </>
   );
 };
 

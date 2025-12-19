@@ -17,6 +17,9 @@ import DetailOrders from "./pages/DetailOrders";
 import Payment from "./pages/Payment";
 import Transaction from "./pages/Transaction";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import Variant from "./pages/Variant";
+import AddVariant from "./pages/AddVariant";
+import Header from "./components/Header";
 
 const queryClient = new QueryClient();
 
@@ -32,7 +35,9 @@ function App() {
                 path="/"
                 element={
                   <ProtectedRoute>
-                    <Orders />
+                    <Header title="Buat Pesanan">
+                      <Orders />
+                    </Header>
                   </ProtectedRoute>
                 }
               />
@@ -40,7 +45,9 @@ function App() {
                 path="/keranjang"
                 element={
                   <ProtectedRoute>
-                    <Cart />
+                    <Header title="Keranjang Pesanan">
+                      <Cart />
+                    </Header>
                   </ProtectedRoute>
                 }
               />
@@ -48,7 +55,9 @@ function App() {
                 path="/keranjang/detail-pesanan"
                 element={
                   <ProtectedRoute>
-                    <DetailOrders />
+                    <Header title="Detail Pesanan">
+                      <DetailOrders />
+                    </Header>
                   </ProtectedRoute>
                 }
               />
@@ -56,7 +65,9 @@ function App() {
                 path="/keranjang/pembayaran"
                 element={
                   <ProtectedRoute>
-                    <Payment />
+                    <Header title="Pembayaran">
+                      <Payment />
+                    </Header>
                   </ProtectedRoute>
                 }
               />
@@ -64,7 +75,9 @@ function App() {
                 path="/keranjang/pembayaran/transaksi"
                 element={
                   <ProtectedRoute>
-                    <Transaction />
+                    <Header title="Transaksi">
+                      <Transaction />
+                    </Header>
                   </ProtectedRoute>
                 }
               />
@@ -72,7 +85,9 @@ function App() {
                 path="/kelola"
                 element={
                   <ProtectedRoute>
-                    <ManageStore />
+                    <Header title="Kelola Toko">
+                      <ManageStore />
+                    </Header>
                   </ProtectedRoute>
                 }
               />
@@ -80,7 +95,9 @@ function App() {
                 path="/kelola/kategori"
                 element={
                   <ProtectedRoute>
-                    <Kategori />
+                    <Header title="Daftar Kategori Menu">
+                      <Kategori />
+                    </Header>
                   </ProtectedRoute>
                 }
               />
@@ -88,7 +105,9 @@ function App() {
                 path="/kelola/kategori/tambah-kategori"
                 element={
                   <ProtectedRoute>
-                    <AddKategori />
+                    <Header title="Edit/Tambah Kategori">
+                      <AddKategori />
+                    </Header>
                   </ProtectedRoute>
                 }
               />
@@ -96,7 +115,9 @@ function App() {
                 path="/kelola/kategori/edit-kategori"
                 element={
                   <ProtectedRoute>
-                    <AddKategori />
+                    <Header title="Edit/Tambah Kategori">
+                      <AddKategori />
+                    </Header>
                   </ProtectedRoute>
                 }
               />
@@ -104,7 +125,9 @@ function App() {
                 path="/kelola/daftar-menu"
                 element={
                   <ProtectedRoute>
-                    <Products />
+                    <Header title="Daftar Menu">
+                      <Products />
+                    </Header>
                   </ProtectedRoute>
                 }
               />
@@ -112,7 +135,9 @@ function App() {
                 path="/kelola/daftar-menu/tambah-menu"
                 element={
                   <ProtectedRoute>
-                    <AddProducts />
+                    <Header title="Edit/Tambah Menu">
+                      <AddProducts />
+                    </Header>
                   </ProtectedRoute>
                 }
               />
@@ -120,7 +145,29 @@ function App() {
                 path="/kelola/daftar-menu/edit-menu"
                 element={
                   <ProtectedRoute>
-                    <AddProducts />
+                    <Header title="Edit/Tambah Menu">
+                      <AddProducts />
+                    </Header>
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/kelola/varian"
+                element={
+                  <ProtectedRoute>
+                    <Header title="Varian Menu">
+                      <Variant />
+                    </Header>
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/kelola/daftar-menu/tambah-varian"
+                element={
+                  <ProtectedRoute>
+                    <Header title="Tambah Varian">
+                      <AddVariant />
+                    </Header>
                   </ProtectedRoute>
                 }
               />
@@ -128,7 +175,9 @@ function App() {
                 path="/riwayat"
                 element={
                   <ProtectedRoute>
-                    <History />
+                    <Header title="Riwayat Penjualan">
+                      <History />
+                    </Header>
                   </ProtectedRoute>
                 }
               />
@@ -136,7 +185,9 @@ function App() {
                 path="/riwayat/detail-transaksi"
                 element={
                   <ProtectedRoute>
-                    <Transaction />
+                    <Header title="Transaksi">
+                      <Transaction />
+                    </Header>
                   </ProtectedRoute>
                 }
               />
@@ -144,7 +195,9 @@ function App() {
                 path="/laporan"
                 element={
                   <ProtectedRoute>
-                    <Reports />
+                    <Header title="Laporan Penjualan">
+                      <Reports />
+                    </Header>
                   </ProtectedRoute>
                 }
               />

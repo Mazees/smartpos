@@ -1,4 +1,3 @@
-import Header from "../components/Header";
 import ListNav from "../components/ListNav";
 import Breadcrumbs from "../components/Breadcrumbs";
 import { getAllKategori, getAllMenu, realtime } from "../api/api";
@@ -39,7 +38,7 @@ const ManageStore = () => {
     };
   }, []);
   return (
-    <Header title="Kelola Toko">
+    <>
       <ListNav to="/kelola/daftar-menu" desc={`${menu.length} Menu`}>
         Daftar Menu
       </ListNav>
@@ -49,7 +48,7 @@ const ManageStore = () => {
       {/* <ListNav to="/kelola/member" desc={`${kategori.length} Kategori`}>
         Daftar Member
       </ListNav> */}
-    </Header>
+    </>
   );
 };
 

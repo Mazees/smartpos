@@ -3,7 +3,6 @@ import { Navigate, useNavigate } from "react-router-dom";
 import { getAllReadyMenu, getAllKategori } from "../api/api";
 import { realtime } from "../api/api";
 import Loading from "../components/Loading";
-import Header from "../components/Header";
 import Breadcrumbs from "../components/Breadcrumbs";
 import { CartContext } from "../contexts/CartContext";
 import Alert from "../components/Alert";
@@ -144,7 +143,7 @@ const Orders = () => {
   };
 
   return (
-    <Header title="Buat Pesanan">
+    <>
       <Alert message={notification.message} variant={notification.variant} />
       {loading ? (
         <div className="min-h-[60vh] flex items-center justify-center">
@@ -513,7 +512,7 @@ const Orders = () => {
           )}
         </>
       )}
-    </Header>
+    </>
   );
 };
 
