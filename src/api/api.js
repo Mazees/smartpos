@@ -38,7 +38,8 @@ export const logoutUser = async () => {
 // --- Menu ---
 export const getAllMenu = async () => {
   const { data, error } = await supabase.from("menu").select("*");
-  return { data, error };
+  if (error) throw error;
+  return data;
 };
 
 export const getAllReadyMenu = async () => {
@@ -46,7 +47,8 @@ export const getAllReadyMenu = async () => {
     .from("menu")
     .select("*")
     .eq("status", true);
-  return { data, error };
+  if (error) throw error;
+  return data;
 };
 
 export const addMenu = async (
@@ -98,7 +100,8 @@ export const deleteMenu = async (id) => {
 // --- Kategori ---
 export const getAllKategori = async () => {
   const { data, error } = await supabase.from("kategori").select("*");
-  return { data, error };
+  if (error) throw error;
+  return data;
 };
 
 export const addKategori = async (namaKategori = "") => {
@@ -137,7 +140,8 @@ export const getAllOrders = async () => {
     .from("orders")
     .select("*")
     .order("tgl_pembelian", { ascending: false });
-  return { data, error };
+  if (error) throw error;
+  return data;
 };
 
 export const getOrderDetails = async (orderId) => {

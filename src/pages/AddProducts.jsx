@@ -7,8 +7,10 @@ import { getAllKategori, realtime, deleteMenu } from "../api/api";
 import Alert from "../components/Alert";
 import { editMenu, addMenu } from "../api/api";
 import WarningModal from "../components/WarningModal";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 const AddProducts = () => {
+  const queryClinent = useQueryClient();
   const location = useLocation();
   const [dataProducts, setDataProducts] = useState(location.state || {});
   const navigate = useNavigate();
@@ -23,7 +25,12 @@ const AddProducts = () => {
   const [status, setStatus] = useState(
     typeof dataProducts.status === "boolean" ? dataProducts.status : true
   );
-  const [kategori, setKategori] = useState([]);
+  const {
+    data: kategori = [],
+    isLoading: loading,
+    isError,
+    error: errorKategori,
+  } = useQuery({ queryKey: ["kategori"], queryFn: getAllKategori });
   const loadData = async () => {
     const { data, error } = await getAllKategori();
     if (error) {
@@ -115,15 +122,16 @@ const AddProducts = () => {
   }, [notification.message]);
 
   useEffect(() => {
-    console.log(dataProducts);
-    loadData();
-    const unsub = realtime("kategori", loadData);
-
-    return () => {
-      try {
-        unsub();
-      } catch (e) {}
-    };
+    if (errorKategori) {
+      console.error(errorKategori);
+      handleNotification(
+        `Error: ${errorKategori?.message ?? JSON.stringify(errorKategori)}`,
+        "error"
+      );
+    }
+    return realtime("kategori", () => {
+      queryClient.invalidateQueries({ queryKey: ["kategori"] });
+    });
   }, []);
   return (
     <Header title="Edit/Tambah Menu">

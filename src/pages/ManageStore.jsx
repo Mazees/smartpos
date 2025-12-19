@@ -4,29 +4,35 @@ import Breadcrumbs from "../components/Breadcrumbs";
 import { getAllKategori, getAllMenu, realtime } from "../api/api";
 import { useEffect, useState } from "react";
 import Alert from "../components/Alert";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 const ManageStore = () => {
-  const [kategori, setKategori] = useState([]);
-  const [menu, setMenu] = useState([]);
-
-  const loadData = async () => {
-    const { data: menuData, error: menuError } = await getAllMenu();
-    const { data: kategoriData, error: kategoriError } = await getAllKategori();
+  const queryClient = useQueryClient();
+  const {
+    data: kategori = [],
+    isLoading,
+    isError: isKategoriError,
+    error: kategoriError,
+  } = useQuery({ queryKey: ["kategori"], queryFn: getAllKategori });
+  const {
+    data: menu = [],
+    isLoading: loading,
+    isError: isMenuError,
+    error: menuError,
+  } = useQuery({ queryKey: ["readyMenu"], queryFn: getAllMenu });
+  useEffect(() => {
     if (menuError) {
       console.error(menuError);
     }
     if (kategoriError) {
       console.error(kategoriError);
     }
-    setKategori(kategoriData || []);
-    setMenu(menuData || []);
-    console.log({ kategoriData, menuData });
-  };
-
-  useEffect(() => {
-    loadData();
-    const unsubMenu = realtime("menu", loadData);
-    const unsubKategori = realtime("kategori", loadData);
+    const unsubMenu = realtime("menu", () => {
+      queryClient.invalidateQueries({ queryKey: ["readyMenu"] });
+    });
+    const unsubKategori = realtime("kategori", () => {
+      queryClient.invalidateQueries({ queryKey: ["kategori"] });
+    });
     return () => {
       unsubMenu();
       unsubKategori();

@@ -16,10 +16,13 @@ import Cart from "./pages/Cart";
 import DetailOrders from "./pages/DetailOrders";
 import Payment from "./pages/Payment";
 import Transaction from "./pages/Transaction";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+
+const queryClient = new QueryClient();
 
 function App() {
   return (
-    <>
+    <QueryClientProvider client={queryClient}>
       <AuthProvider>
         <CartProvider>
           <Router>
@@ -149,7 +152,7 @@ function App() {
           </Router>
         </CartProvider>
       </AuthProvider>
-    </>
+    </QueryClientProvider>
   );
 }
 

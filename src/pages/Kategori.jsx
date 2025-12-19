@@ -4,22 +4,26 @@ import Breadcrumbs from "../components/Breadcrumbs";
 import Loading from "../components/Loading";
 import { getAllKategori, realtime } from "../api/api";
 import { useNavigate } from "react-router-dom";
+import { useQueryClient, useQuery } from "@tanstack/react-query";
+import Alert from "../components/Alert";
 
 const Kategori = () => {
-  const [kategori, setKategori] = useState([]);
+  const queryClient = useQueryClient();
+  const {
+    data: kategori = [],
+    isLoading: loading,
+    isError,
+    error: errorKategori,
+  } = useQuery({ queryKey: ["kategori"], queryFn: getAllKategori });
   const [kategoriCopy, setkategoriCopy] = useState([]);
-  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
-  const loadData = async () => {
-    setLoading(true);
-    const { data, error } = await getAllKategori();
-    if (error) {
-      console.error(error);
-      setKategori([]);
-    } else {
-      setKategori(data || []);
-    }
-    setLoading(false);
+  const [notification, setNotification] = useState({
+    message: "",
+    variant: "warning",
+  });
+  const handleNotification = (message, variant) => {
+    setNotification({ message, variant });
+    setTimeout(() => setNotification({}), 2500);
   };
 
   useEffect(() => {
@@ -27,17 +31,22 @@ const Kategori = () => {
   }, [kategori]);
 
   useEffect(() => {
-    loadData();
-    const unsub = realtime("kategori", loadData);
-
-    return () => {
-      try {
-        unsub();
-      } catch (e) {}
-    };
+    if (errorKategori) {
+      console.error(errorKategori);
+      handleNotification(
+        `Error: ${errorKategori?.message ?? JSON.stringify(errorKategori)}`,
+        "error"
+      );
+    }
+    return realtime("kategori", () => {
+      queryClient.invalidateQueries({ queryKey: ["kategori"] });
+    });
   }, []);
   return (
     <Header title="Daftar Kategori Menu">
+      {notification.message && (
+        <Alert message={notification.message} variant={notification.variant} />
+      )}
       <button
         className="btn btn-circle btn-accent btn-lg fixed z-50 bottom-8 right-8"
         onClick={() => navigate("/kelola/kategori/edit-kategori")}

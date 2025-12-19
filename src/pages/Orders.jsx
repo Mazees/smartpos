@@ -8,19 +8,30 @@ import Breadcrumbs from "../components/Breadcrumbs";
 import { CartContext } from "../contexts/CartContext";
 import Alert from "../components/Alert";
 import { fetchAI } from "../api/ai";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 const Orders = () => {
-  const [kategori, setKategori] = useState([]);
+  const queryClient = useQueryClient();
   const { cart, setCart } = useContext(CartContext);
   const [manualPrice, setManualPrice] = useState("");
   const [manualNote, setManualNote] = useState("");
   const navigate = useNavigate();
   const [totalHarga, setTotalHarga] = useState(0);
   const [jumlahItem, setJumlahItem] = useState(0);
-  const [menu, setMenu] = useState([]);
+  const {
+    data: kategori = [],
+    isLoading,
+    isError: isKategoriError,
+    error: kategoriError,
+  } = useQuery({ queryKey: ["kategori"], queryFn: getAllKategori });
+  const {
+    data: menu = [],
+    isLoading: loading,
+    isError: isMenuError,
+    error: menuError,
+  } = useQuery({ queryKey: ["readyMenu"], queryFn: getAllReadyMenu });
   const [page, setPage] = useState(0);
   const [menuCopy, setMenuCopy] = useState([]);
-  const [loading, setLoading] = useState(false);
   const [smartOrder, setSmartOrder] = useState();
   const [loadingSmartOrder, setLoadingSmartOrder] = useState(false);
   const [smartOrderError, setSmartOrderError] = useState("");
@@ -51,19 +62,9 @@ const Orders = () => {
     navigate("/keranjang");
     setLoadingSmartOrder(false);
   };
-  const loadData = async () => {
-    setLoading(true);
-    const { data: dataMenu, error: menuError } = await getAllReadyMenu();
-    const { data: dataKategori, error: kategoriError } = await getAllKategori();
-    if (menuError) console.error(menuError);
-    if (kategoriError) console.error(kategoriError);
-    setKategori(dataKategori || []);
-    setMenu(dataMenu || []);
-    setLoading(false);
-    console.log({ dataKategori, dataMenu });
-  };
 
   useEffect(() => {
+    if (!menu) return [];
     setMenuCopy([...menu].sort((a, b) => b.price - a.price));
   }, [menu]);
   useEffect(() => {
@@ -73,9 +74,12 @@ const Orders = () => {
   }, [cart]);
 
   useEffect(() => {
-    loadData();
-    const unsubMenu = realtime("menu", loadData);
-    const unsubKategori = realtime("kategori", loadData);
+    const unsubMenu = realtime("menu", () => {
+      queryClient.invalidateQueries({ queryKey: ["readyMenu"] });
+    });
+    const unsubKategori = realtime("kategori", () => {
+      queryClient.invalidateQueries({ queryKey: ["kategori"] });
+    });
     return () => {
       unsubMenu();
       unsubKategori();
@@ -145,6 +149,37 @@ const Orders = () => {
       {loading ? (
         <div className="min-h-[60vh] flex items-center justify-center">
           <Loading message="Memuat menu..." />
+        </div>
+      ) : isMenuError ? (
+        <div className="min-h-[60vh] flex items-center justify-center">
+          <div className="flex flex-col items-center gap-4 p-6 bg-error/10 rounded-lg border border-error/30 max-w-md">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-16 w-16 text-error"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
+            </svg>
+            <h2 className="poppins-bold text-xl text-error">
+              Gagal Memuat Menu
+            </h2>
+            <p className="poppins-regular text-center text-base-content/70">
+              {menuError?.message || "Terjadi kesalahan saat memuat data menu"}
+            </p>
+            <button
+              onClick={() => window.location.reload()}
+              className="btn btn-error btn-outline mt-2"
+            >
+              Muat Ulang Halaman
+            </button>
+          </div>
         </div>
       ) : (
         <>

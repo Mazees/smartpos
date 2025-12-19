@@ -8,12 +8,23 @@ import Breadcrumbs from "../components/Breadcrumbs";
 import { getAllMenu, getAllKategori } from "../api/api";
 import supabase from "../api/supabase";
 import { realtime } from "../api/api";
+import { useQueryClient, useQuery } from "@tanstack/react-query";
 
 const Products = () => {
-  const [menuItems, setMenuItems] = useState([]);
+  const queryClient = useQueryClient();
+  const {
+    data: menuItems = [],
+    isLoading: loading,
+    isError: isErrorMenu,
+    error: errorMenu,
+  } = useQuery({ queryKey: ["menu"], queryFn: getAllMenu });
   const [menuItemsCopy, setMenuItemsCopy] = useState([]);
-  const [kategoriItems, setKategoriItems] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const {
+    data: kategoriItems = [],
+    isLoading,
+    isError: isKategoriError,
+    error: errorKategori,
+  } = useQuery({ queryKey: ["kategori"], queryFn: getAllKategori });
   const [notification, setNotification] = useState({
     message: "",
     variant: "warning",
@@ -23,19 +34,18 @@ const Products = () => {
     setTimeout(() => setNotification({}), 2500);
   };
   const navigate = useNavigate();
-  async function loadMenu() {
-    setLoading(true);
-    const { data: dataMenu, error: errorMenu } = await getAllMenu();
-    const { data: dataKategori, error: errorKategori } = await getAllKategori();
+
+  useEffect(() => {
+    setMenuItemsCopy([...menuItems].sort((a, b) => b.price - a.price));
+  }, [menuItems]);
+
+  useEffect(() => {
     if (errorMenu) {
       console.error(errorMenu);
       handleNotification(
         `Error: ${errorMenu?.message ?? JSON.stringify(errorMenu)}`,
         "error"
       );
-      setMenuItems([]);
-    } else {
-      setMenuItems(dataMenu);
     }
     if (errorKategori) {
       console.error(errorKategori);
@@ -43,20 +53,10 @@ const Products = () => {
         `Error: ${errorKategori?.message ?? JSON.stringify(errorKategori)}`,
         "error"
       );
-      setKategoriItems([]);
-    } else {
-      setKategoriItems(dataKategori);
     }
-    setLoading(false);
-  }
-
-  useEffect(() => {
-    setMenuItemsCopy([...menuItems].sort((a, b) => b.price-a.price));
-  }, [menuItems]);
-
-  useEffect(() => {
-    loadMenu();
-    return realtime("menu", loadMenu);
+    return realtime("menu", () => {
+      queryClient.invalidateQueries({ queryKey: ["menu"] });
+    });
   }, []);
   useEffect(() => {
     console.log(menuItems);
@@ -114,8 +114,9 @@ const Products = () => {
           </label>
           {kategoriItems.map(
             (kategori, idxKategori) =>
-              menuItemsCopy.filter((filteredMenu) => filteredMenu.id_kategori === kategori.id)
-                .length > 0 && (
+              menuItemsCopy.filter(
+                (filteredMenu) => filteredMenu.id_kategori === kategori.id
+              ).length > 0 && (
                 <ul
                   className="list bg-base-100 mt-3 border-b-[0.05px] border-b-accent/40 mx-2 py-4"
                   key={kategori.id}
@@ -127,6 +128,7 @@ const Products = () => {
                     .filter((menu) => menu.id_kategori === kategori.id)
                     .map((menu, idx) => (
                       <li
+                        key={menu.id}
                         onClick={() =>
                           navigate("/kelola/daftar-menu/edit-menu", {
                             state: menu,
@@ -168,7 +170,9 @@ const Products = () => {
               )
           )}
           <ul className="list bg-base-100 mt-3 border-b-[0.05px] border-b-accent/40 mx-2 py-4">
-            <h1 className="poppins-bold text-lg text-center w-full mb-1">Semua Menu</h1>
+            <h1 className="poppins-bold text-lg text-center w-full mb-1">
+              Semua Menu
+            </h1>
             {menuItemsCopy.map((menu, idx) => (
               <li
                 onClick={() =>
