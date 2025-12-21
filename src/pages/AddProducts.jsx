@@ -2,7 +2,15 @@ import React, { useEffect } from "react";
 import Breadcrumbs from "../components/Breadcrumbs";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useState } from "react";
-import { getAllKategori, realtime, deleteMenu } from "../api/api";
+import {
+  getAllKategori,
+  getAllVariant,
+  getVariantByIdMenu,
+  realtime,
+  deleteMenu,
+  countVariantMenu,
+  saveMenuVariants,
+} from "../api/api";
 import Alert from "../components/Alert";
 import { editMenu, addMenu } from "../api/api";
 import WarningModal from "../components/WarningModal";
@@ -25,11 +33,31 @@ const AddProducts = () => {
     typeof dataProducts.status === "boolean" ? dataProducts.status : true
   );
   const {
+    data: selectedVariants = [],
+    isLoading: loadingSelectedVariants,
+    isError: isSelectedVariantsError,
+    error: errorSelectedVariants,
+  } = useQuery({
+    queryKey: ["selectedVariants"],
+    queryFn: () => getVariantByIdMenu(location.state.id),
+    enabled: !!location.state?.id,
+  });
+  const [selectedVariantCopy, setSelectedVariantCopy] = useState([]);
+  useEffect(() => {
+    setSelectedVariantCopy([...selectedVariants]);
+  }, [selectedVariants]);
+  const {
     data: kategori = [],
     isLoading: loading,
     isError,
     error: errorKategori,
   } = useQuery({ queryKey: ["kategori"], queryFn: getAllKategori });
+  const {
+    data: variants = [],
+    isLoading: loadingVariants,
+    isError: isVariantError,
+    error: errorVariant,
+  } = useQuery({ queryKey: ["variants"], queryFn: getAllVariant });
   const loadData = async () => {
     const { data, error } = await getAllKategori();
     if (error) {
@@ -56,17 +84,15 @@ const AddProducts = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!nama || nama.trim() === "") {
-      handleNotification("Nama menu wajib diisi", "warning");
-      return;
-    }
-    if (!selectedKategori) {
-      handleNotification("Pilih kategori", "warning");
-      return;
-    }
+
+    // ... existing validation ...
 
     try {
+      let menuId;
+
+      // Save/Update menu
       if (dataProducts && dataProducts.id) {
+        // Update mode
         const { data, error } = await editMenu(
           dataProducts.id,
           nama,
@@ -75,17 +101,10 @@ const AddProducts = () => {
           status,
           Number(diskon)
         );
-        if (error) {
-          console.error(error);
-          handleNotification(
-            `Error: ${error?.message ?? JSON.stringify(error)}`,
-            "error"
-          );
-        } else {
-          handleNotification("Berhasil mengubah menu", "success");
-          setTimeout(() => navigate(-1), 1500);
-        }
+        if (error) throw error;
+        menuId = dataProducts.id;
       } else {
+        // Create mode
         const { data, error } = await addMenu(
           nama,
           Number(harga),
@@ -93,21 +112,48 @@ const AddProducts = () => {
           Number(diskon),
           status
         );
-        if (error) {
-          console.error(error);
-          handleNotification(
-            `Error: ${error?.message ?? JSON.stringify(error)}`,
-            "error"
-          );
-        } else {
-          handleNotification("Menu berhasil ditambahkan", "success");
-          setTimeout(() => navigate(-1), 1500);
-        }
+        if (error) throw error;
+        menuId = data[0].id;
+      }
+
+      // Save variants (both create & update mode)
+      const { error: variantError } = await saveMenuVariants(
+        menuId,
+        selectedVariantCopy
+      );
+
+      if (variantError) {
+        handleNotification("Menu tersimpan tapi variant gagal", "warning");
+      } else {
+        handleNotification(
+          dataProducts?.id
+            ? "Menu berhasil diupdate"
+            : "Menu berhasil ditambahkan",
+          "success"
+        );
+        setTimeout(() => navigate(-1), 1500);
       }
     } catch (err) {
       console.error(err);
       handleNotification("Error saat menyimpan menu", "error");
     }
+  };
+
+  useEffect(() => {
+    console.log("selectedVariantCopy", selectedVariantCopy);
+  }, [selectedVariantCopy]);
+
+  const handleAddVariant = async (variant) => {
+    const variantCount = await countVariantMenu();
+    setSelectedVariantCopy([
+      ...selectedVariants,
+      {
+        id_variant: variant.id,
+        id_menu: dataProducts.id,
+        position: variantCount + 1,
+      },
+    ]);
+    document.getElementById("variant_modal").close();
   };
 
   // auto-dismiss notifications after short delay
@@ -134,7 +180,7 @@ const AddProducts = () => {
   }, []);
   return (
     <>
-      <fieldset className="fieldset bg-base-200 border-base-300 rounded-box w-full h-full border p-4">
+      <fieldset className="fieldset bg-base-200 border-base-300 rounded-box w-full border p-4">
         {notification.message && (
           <Alert
             message={notification.message}
@@ -188,6 +234,115 @@ const AddProducts = () => {
               </option>
             ))}
           </select>
+
+          <div className="divider">Variant Menu</div>
+          {selectedVariantCopy.length > 0 ? (
+            <div className="flex flex-col gap-2 mb-3">
+              {variants
+                .filter((variant) =>
+                  selectedVariantCopy.find(
+                    (item) => item.id_variant === variant.id
+                  )
+                )
+                .sort((a, b) => a.position - b.position)
+                .map((variant, index) => {
+                  return (
+                    <div
+                      key={variant.id}
+                      className="p-3 border rounded-lg flex items-start justify-between gap-3"
+                    >
+                      <div className="flex-1">
+                        <div className="font-medium">{variant.name}</div>
+                        {variant.desc && (
+                          <div className="text-xs opacity-60 mt-1">
+                            {variant.desc}
+                          </div>
+                        )}
+                      </div>
+                      <button
+                        type="button"
+                        className="btn btn-error btn-sm"
+                        onClick={() => {
+                          setSelectedVariantCopy(
+                            selectedVariantCopy.filter(
+                              (item) => item.id_variant !== variant.id
+                            )
+                          );
+                        }}
+                      >
+                        ✕
+                      </button>
+                    </div>
+                  );
+                })}
+            </div>
+          ) : (
+            <div className="text-sm opacity-60 mb-3">
+              Belum ada variant dipilih untuk menu ini.
+            </div>
+          )}
+
+          <button
+            type="button"
+            className="btn btn-outline w-full"
+            onClick={() => document.getElementById("variant_modal").showModal()}
+          >
+            + Tambahkan Variant
+          </button>
+
+          {/* Modal untuk pilih variant */}
+          <dialog id="variant_modal" className="modal">
+            <div className="modal-box">
+              <h3 className="font-bold text-lg mb-4">Pilih Variant</h3>
+
+              {loadingVariants ? (
+                <div className="text-sm opacity-60">Memuat variant...</div>
+              ) : variants.length === 0 ? (
+                <div className="text-sm opacity-60">
+                  Belum ada variant. Buat variant terlebih dahulu.
+                </div>
+              ) : (
+                <div className="flex flex-col gap-2">
+                  {variants
+                    .filter((v) => {
+                      return !selectedVariantCopy.some(
+                        (variant) => variant.id_variant === v.id
+                      );
+                    })
+                    .map((variant) => (
+                      <button
+                        key={variant.id}
+                        type="button"
+                        className="btn btn-ghost justify-start text-left h-auto py-3"
+                        onClick={() => handleAddVariant(variant)}
+                      >
+                        <div className="flex flex-col items-start">
+                          <span className="font-medium">{variant.name}</span>
+                          {variant.desc && (
+                            <span className="text-xs opacity-60">
+                              {variant.desc}
+                            </span>
+                          )}
+                        </div>
+                      </button>
+                    ))}
+
+                  {variants.filter((v) => !selectedVariants.includes(v.id))
+                    .length === 0 && (
+                    <div className="text-sm opacity-60 text-center py-4">
+                      Semua variant sudah ditambahkan
+                    </div>
+                  )}
+                </div>
+              )}
+
+              <div className="modal-action">
+                <form method="dialog">
+                  <button className="btn">Tutup</button>
+                </form>
+              </div>
+            </div>
+          </dialog>
 
           <label className="label">
             <input

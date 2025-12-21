@@ -1,6 +1,11 @@
 import { useState, useEffect, useContext } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
-import { getAllReadyMenu, getAllKategori } from "../api/api";
+import {
+  getAllReadyMenu,
+  getAllKategori,
+  getAllVariant,
+  getVariantByIdMenu,
+} from "../api/api";
 import { realtime } from "../api/api";
 import Loading from "../components/Loading";
 import Breadcrumbs from "../components/Breadcrumbs";
@@ -8,9 +13,15 @@ import { CartContext } from "../contexts/CartContext";
 import Alert from "../components/Alert";
 import { fetchAI } from "../api/ai";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import ConfirmSelect from "../components/ConfirmSelect";
 
 const Orders = () => {
   const queryClient = useQueryClient();
+  const [selectState, setSelectState] = useState({
+    isOpen: false,
+    menu: null,
+    variants: [],
+  });
   const { cart, setCart } = useContext(CartContext);
   const [manualPrice, setManualPrice] = useState("");
   const [manualNote, setManualNote] = useState("");
@@ -23,6 +34,12 @@ const Orders = () => {
     isError: isKategoriError,
     error: kategoriError,
   } = useQuery({ queryKey: ["kategori"], queryFn: getAllKategori });
+  const {
+    data: variants = [],
+    isLoading: isLoadingVariants,
+    isError: isVariantsError,
+    error: varianError,
+  } = useQuery({ queryKey: ["variants"], queryFn: getAllVariant });
   const {
     data: menu = [],
     isLoading: loading,
@@ -89,6 +106,17 @@ const Orders = () => {
     navigate("/keranjang");
   };
 
+  const handleClickItem = async (menu) => {
+    const variantMenu = await getVariantByIdMenu(menu.id);
+    setSelectState({
+      isOpen: true,
+      menu: menu,
+      variants: variants.filter((variant) =>
+        variantMenu.some((itemMenu) => itemMenu.id_variant === variant.id)
+      ),
+    });
+  };
+
   const handleAddToCart = (menu) => {
     setCart((prev) => {
       const prevItem = [...prev];
@@ -144,6 +172,7 @@ const Orders = () => {
 
   return (
     <>
+      <ConfirmSelect selectState={selectState} onClose={() => setSelectState({ isOpen: false, menu: null, variants: [] })}/>
       <Alert message={notification.message} variant={notification.variant} />
       {loading ? (
         <div className="min-h-[60vh] flex items-center justify-center">
@@ -315,87 +344,77 @@ const Orders = () => {
                   {jumlahItem} Items
                 </button>
               </div>
-              {kategori.map(
-                (kat, idxKategori) =>
-                  menuCopy.filter((menu) => menu.id_kategori === kat.id)
-                    .length > 0 && (
-                    <ul
-                      className="list bg-base-100 mt-3 border-b-[0.05px] border-b-accent/40 py-4"
-                      key={kat.id || idxKategori}
-                    >
-                      <h1 className="poppins-medium w-full mb-1">
-                        {kat.nama_kategori || kat.name}:
-                      </h1>
-                      {menuCopy
-                        .filter((menu) => menu.id_kategori === kat.id)
-                        .map((menu, idx) => (
-                          <li
-                            key={menu.id || idx}
-                            onClick={() => handleAddToCart(menu)}
-                            className="p-4 gap-2 flex items-center list-row active:bg-base-content/30 active:text-white hover:cursor-pointer"
-                          >
-                            <div className="w-10 h-10 flex justify-center items-center poppins-bold bg-base-content rounded-lg text-base-300">
-                              {menu.name
-                                .split(" ")
-                                .slice(0, 2)
-                                .map((item) => item[0])}
-                            </div>
-                            <div className="flex flex-col justify-center">
-                              <div className="poppins-medium text-[14px] poppins-bold">
-                                {menu.name}
-                              </div>
-                              <div className="poppins-medium text-[14px] flex gap-1">
-                                <h1>
-                                  Rp{" "}
-                                  <span
-                                    className={`${
-                                      menu.discount_price == 0
-                                        ? ""
-                                        : "line-through"
-                                    }`}
-                                  >{` ${menu.price.toLocaleString(
-                                    "id-ID"
-                                  )}`}</span>
-                                </h1>
-                                <h1
-                                  className={`${
-                                    menu.discount_price == 0 ? "hidden" : ""
-                                  }`}
-                                >{`${menu.discount_price.toLocaleString(
-                                  "id-ID"
-                                )}`}</h1>
-                              </div>
-                            </div>
-                            <div
-                              className={`poppins-bold bg-base-300 ml-auto w-5 h-5 text-xs opacity-50 ${
-                                cart.findIndex(
-                                  (item) => item.menu_id == menu.id
-                                ) !== -1
-                                  ? "flex"
-                                  : "hidden"
-                              } justify-center items-center rounded-[5px]`}
-                            >
-                              {(cart.findIndex(
-                                (item) => item.menu_id == menu.id
-                              ) !== -1 &&
-                                cart[
-                                  cart.findIndex(
-                                    (item) => item.menu_id == menu.id
-                                  )
-                                ].qty) ||
-                                ""}
-                            </div>
-                          </li>
-                        ))}
-                    </ul>
-                  )
-              )}
+              {kategori.map((kat, idxKategori) => (
+                <ul
+                  className="list bg-base-100 mt-3 border-b-[0.05px] border-b-accent/40 py-4"
+                  key={kat.id || idxKategori}
+                >
+                  <h1 className="poppins-medium w-full mb-1">
+                    {kat.nama_kategori || kat.name}:
+                  </h1>
+                  {menuCopy
+                    .filter((menu) => menu.id_kategori === kat.id)
+                    .map((menu, idx) => (
+                      <li
+                        key={menu.id || idx}
+                        onClick={() => handleClickItem(menu)}
+                        className="p-4 gap-2 flex items-center list-row active:bg-base-content/30 active:text-white hover:cursor-pointer"
+                      >
+                        <div className="w-10 h-10 flex justify-center items-center poppins-bold bg-base-content rounded-lg text-base-300">
+                          {menu.name
+                            .split(" ")
+                            .slice(0, 2)
+                            .map((item) => item[0])}
+                        </div>
+                        <div className="flex flex-col justify-center">
+                          <div className="poppins-medium text-[14px] poppins-bold">
+                            {menu.name}
+                          </div>
+                          <div className="poppins-medium text-[14px] flex gap-1">
+                            <h1>
+                              Rp{" "}
+                              <span
+                                className={`${
+                                  menu.discount_price == 0 ? "" : "line-through"
+                                }`}
+                              >{` ${menu.price.toLocaleString("id-ID")}`}</span>
+                            </h1>
+                            <h1
+                              className={`${
+                                menu.discount_price == 0 ? "hidden" : ""
+                              }`}
+                            >{`${menu.discount_price.toLocaleString(
+                              "id-ID"
+                            )}`}</h1>
+                          </div>
+                        </div>
+                        <div
+                          className={`poppins-bold bg-base-300 ml-auto w-5 h-5 text-xs opacity-50 ${
+                            cart.findIndex(
+                              (item) => item.menu_id == menu.id
+                            ) !== -1
+                              ? "flex"
+                              : "hidden"
+                          } justify-center items-center rounded-[5px]`}
+                        >
+                          {cart.findIndex((item) => item.menu_id == menu.id) !==
+                            -1 &&
+                            cart.reduce((sum, item) => {
+                              if (item.menu_id == menu.id)
+                                return sum + item.qty;
+                              return sum;
+                            }, 0)}
+                        </div>
+                      </li>
+                    ))}
+                </ul>
+              ))}
               <ul className="list bg-base-100 mt-3 border-b-[0.05px] border-b-accent/40 py-4">
                 <h1 className="poppins-medium w-full mb-1">Semua Menu:</h1>
                 {menuCopy.map((menu, idx) => (
                   <li
                     key={menu.id || idx}
-                    onClick={() => handleAddToCart(menu)}
+                    onClick={() => handleClickItem(menu)}
                     className="p-4 gap-2 flex items-center list-row active:bg-base-content/30 active:text-white hover:cursor-pointer"
                   >
                     <div className="w-10 h-10 flex justify-center items-center poppins-bold bg-base-content rounded-lg text-base-300">
@@ -431,11 +450,12 @@ const Orders = () => {
                           : "hidden"
                       } justify-center items-center rounded-[5px]`}
                     >
-                      {(cart.findIndex((item) => item.menu_id == menu.id) !==
+                      {cart.findIndex((item) => item.menu_id == menu.id) !==
                         -1 &&
-                        cart[cart.findIndex((item) => item.menu_id == menu.id)]
-                          .qty) ||
-                        ""}
+                        cart.reduce((sum, item) => {
+                          if (item.menu_id == menu.id) return sum + item.qty;
+                          return sum;
+                        }, 0)}
                     </div>
                   </li>
                 ))}

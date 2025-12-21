@@ -157,6 +157,70 @@ export const deleteVariant = async (id) => {
   return { data, error };
 };
 
+export const getVariantByIdMenu = async (id) => {
+  const { data, error } = await supabase
+    .from("variant_menu")
+    .select("*")
+    .eq("id_menu", id);
+  if (error) throw error;
+  return data;
+};
+
+export const countVariantMenu = async () => {
+  const { count } = await supabase
+    .from("variant_menu")
+    .select("*", { count: "exact", head: true });
+  return count;
+};
+
+export const bulkInsertVariantMenu = async (bulkData) => {
+  const { data, error } = await supabase
+    .from("variant_menu")
+    .insert(bulkData)
+    .select();
+  return { data, error };
+};
+
+export const saveMenuVariants = async (menuId, variants) => {
+  try {
+    const { error: deleteError } = await supabase
+      .from("variant_menu")
+      .delete()
+      .eq("id_menu", menuId);
+
+    if (deleteError) throw deleteError;
+
+    if (variants && variants.length > 0) {
+      const bulkData = variants.map((v, index) => ({
+        id_menu: menuId,
+        id_variant: v.id_variant,
+        position: v.position,
+      }));
+
+      const { data, error: insertError } = await supabase
+        .from("variant_menu")
+        .insert(bulkData)
+        .select();
+
+      if (insertError) throw insertError;
+      return { data, error: null };
+    }
+
+    return { data: [], error: null };
+  } catch (error) {
+    return { data: null, error };
+  }
+};
+
+export const getVariantMenu = async (menuId) => {
+  const { data, error } = await supabase
+    .from("variant_menu")
+    .select("*")
+    .eq("id_menu", menuId);
+  if (error) throw error;
+  return data;
+};
+
 // --- Kategori ---
 export const getAllKategori = async () => {
   const { data, error } = await supabase.from("kategori").select("*");
