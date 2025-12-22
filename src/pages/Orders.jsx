@@ -47,7 +47,6 @@ const Orders = () => {
     error: menuError,
   } = useQuery({ queryKey: ["readyMenu"], queryFn: getAllReadyMenu });
   const [page, setPage] = useState(0);
-  const [menuCopy, setMenuCopy] = useState([]);
   const [smartOrder, setSmartOrder] = useState();
   const [loadingSmartOrder, setLoadingSmartOrder] = useState(false);
   const [smartOrderError, setSmartOrderError] = useState("");
@@ -79,10 +78,9 @@ const Orders = () => {
     setLoadingSmartOrder(false);
   };
 
-  useEffect(() => {
-    if (!menu) return [];
-    setMenuCopy([...menu].sort((a, b) => b.price - a.price));
-  }, [menu]);
+  // Computed value - sorted menu (auto updates when menu changes)
+  const menuCopy = menu ? [...menu].sort((a, b) => b.price - a.price) : [];
+
   useEffect(() => {
     console.log(cart);
     setTotalHarga(cart.reduce((total, item) => total + item.subtotal, 0));
@@ -105,9 +103,28 @@ const Orders = () => {
   const handleClickCart = () => {
     navigate("/keranjang");
   };
+  const getVariantKey = (variants, note) => {
+    if (!variants || variants.length === 0) {
+      return note ? `no-variant|note:${note}` : "no-variant";
+    }
+
+    const variantKey = variants
+      .map((v) => {
+        const optionIds = v.options
+          .map((opt) => opt.id)
+          .sort((a, b) => a - b)
+          .join(",");
+        return `${v.id}:${optionIds}`;
+      })
+      .sort()
+      .join("|");
+
+    return note ? `${variantKey}|note:${note}` : variantKey;
+  };
 
   const handleClickItem = async (menu) => {
     const variantMenu = await getVariantByIdMenu(menu.id);
+    console.log(variantMenu);
     setSelectState({
       isOpen: true,
       menu: menu,
@@ -118,34 +135,28 @@ const Orders = () => {
   };
 
   const handleAddToCart = (menu) => {
+    setSelectState({
+      isOpen: false,
+      menu: null,
+      variants: [],
+    });
     setCart((prev) => {
-      const prevItem = [...prev];
-      const newIndex = prevItem.findIndex((item) => item.menu_id == menu.id);
-      if (newIndex !== -1) {
-        prevItem[newIndex].qty += 1;
-        const activePrice =
-          prevItem[newIndex].discount_price &&
-          prevItem[newIndex].discount_price !== 0
-            ? prevItem[newIndex].discount_price
-            : prevItem[newIndex].original_price;
-        prevItem[newIndex].subtotal = prevItem[newIndex].qty * activePrice;
-        return prevItem;
+      const cartIndex = prev.findIndex(
+        (item) =>
+          getVariantKey(item.variants, item.note) ===
+            getVariantKey(menu.variants, menu.note) &&
+          item.menu_id === menu.menu_id
+      );
+      if (cartIndex >= 0) {
+        const newCart = [...prev];
+        newCart[cartIndex] = {
+          ...newCart[cartIndex],
+          qty: newCart[cartIndex].qty + menu.qty,
+          subtotal: newCart[cartIndex].subtotal + menu.subtotal,
+        };
+        return newCart;
       } else {
-        return [
-          ...prev,
-          {
-            menu_id: menu.id,
-            name: menu.name,
-            original_price: menu.price,
-            discount_price: menu.discount_price || 0,
-            qty: 1,
-            note: "",
-            subtotal:
-              menu.discount_price && menu.discount_price !== 0
-                ? menu.discount_price
-                : menu.price,
-          },
-        ];
+        return [...prev, menu];
       }
     });
   };
@@ -172,7 +183,13 @@ const Orders = () => {
 
   return (
     <>
-      <ConfirmSelect selectState={selectState} onClose={() => setSelectState({ isOpen: false, menu: null, variants: [] })}/>
+      <ConfirmSelect
+        onConfirm={handleAddToCart}
+        selectState={selectState}
+        onClose={() =>
+          setSelectState({ isOpen: false, menu: null, variants: [] })
+        }
+      />
       <Alert message={notification.message} variant={notification.variant} />
       {loading ? (
         <div className="min-h-[60vh] flex items-center justify-center">

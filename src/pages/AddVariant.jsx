@@ -6,7 +6,7 @@ import Alert from "../components/Alert";
 import { motion, AnimatePresence } from "framer-motion";
 import WarningModal from "../components/WarningModal";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { addVariant, updateVariant } from "../api/api";
+import { addVariant, updateVariant, deleteVariant } from "../api/api";
 
 const AddVariant = () => {
   const queryClient = useQueryClient();
@@ -20,7 +20,6 @@ const AddVariant = () => {
   };
 
   const [namaVariant, setNamaVariant] = useState(dataVariant.name ?? "");
-  const [deskripsi, setDeskripsi] = useState(dataVariant.desc ?? "");
   const [required, setRequired] = useState(dataVariant.required ?? false);
   const [multiple, setMultiple] = useState(dataVariant.multiple ?? false);
   const [options, setOptions] = useState(
@@ -38,6 +37,10 @@ const AddVariant = () => {
     // Validation - Nama variant
     if (!namaVariant || namaVariant.trim() === "") {
       handleNotification("Nama variant wajib diisi", "warning");
+      return;
+    }
+    if (options.some((option) => option.price < 0)) {
+      handleNotification("Harga opsi varian tidak valid!", "warning");
       return;
     }
 
@@ -58,14 +61,13 @@ const AddVariant = () => {
 
     try {
       let result;
-      
+
       // Check if create or update mode
       if (dataVariant && dataVariant.id) {
         // Update mode
         result = await updateVariant(
           dataVariant.id,
           namaVariant,
-          deskripsi,
           required,
           multiple,
           options
@@ -74,7 +76,6 @@ const AddVariant = () => {
         // Create mode
         result = await addVariant(
           namaVariant,
-          deskripsi,
           required,
           multiple,
           options
@@ -89,14 +90,19 @@ const AddVariant = () => {
       }
     } catch (err) {
       console.error(err);
-      handleNotification("Terjadi kesalahan", "error");
+      handleNotification("Terjadi kesalahan:" + err, "error");
     }
   };
 
   const handleAddOption = () => {
     setOptions([
       ...options,
-      { id: options.length + 1, position: options.length + 1, name: "", price: 0 },
+      {
+        id: options.length + 1,
+        position: options.length + 1,
+        name: "",
+        price: 0,
+      },
     ]);
   };
 
@@ -128,15 +134,6 @@ const AddVariant = () => {
             required
           />
 
-          <label className="label">Deskripsi (Opsional):</label>
-          <textarea
-            className="textarea w-full"
-            placeholder="Deskripsi variant"
-            value={deskripsi}
-            onChange={(e) => setDeskripsi(e.target.value)}
-            rows={3}
-          />
-
           <label className="label flex items-center gap-2 cursor-pointer">
             <input
               type="checkbox"
@@ -153,7 +150,7 @@ const AddVariant = () => {
               checked={multiple}
               onChange={(e) => setMultiple(e.target.checked)}
             />
-            <span>Multiple select</span>
+            <span>Bisa pilih lebih dari satu</span>
           </label>
 
           <div className="divider">Opsi Variant</div>
@@ -177,8 +174,7 @@ const AddVariant = () => {
                 <input
                   type="number"
                   className="input w-full"
-                  placeholder="0"
-                  value={option.price}
+                  value={option.price || ""}
                   onChange={(e) =>
                     handleOptionChange(
                       option.id,
@@ -230,11 +226,18 @@ const AddVariant = () => {
             }
             modalId="my_modal_6"
             onConfirm={async () => {
-              // TODO: Implement delete functionality
-              handleNotification(
-                "Fitur hapus belum diimplementasikan",
-                "warning"
-              );
+              const { error } = await deleteVariant(dataVariant.id);
+              if (error) {
+                handleNotification(
+                  `Gagal Menghapus Varian: ${error.message}`,
+                  "error"
+                );
+              } else {
+                handleNotification(
+                  `Berhasil Menghapus Varian dengan ID: ${dataVariant.id}`,
+                  "succes"
+                );
+              }
               setTimeout(() => navigate(-1), 1500);
             }}
           >

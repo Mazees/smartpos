@@ -14,7 +14,6 @@ const Kategori = () => {
     isError,
     error: errorKategori,
   } = useQuery({ queryKey: ["kategori"], queryFn: getAllKategori });
-  const [kategoriCopy, setkategoriCopy] = useState([]);
   const navigate = useNavigate();
   const [notification, setNotification] = useState({
     message: "",
@@ -25,9 +24,8 @@ const Kategori = () => {
     setTimeout(() => setNotification({}), 2500);
   };
 
-  useEffect(() => {
-    setkategoriCopy([...kategori]);
-  }, [kategori]);
+  // Computed value - kategori copy (auto updates when kategori changes)
+  const kategoriCopy = kategori ? [...kategori] : [];
 
   useEffect(() => {
     if (errorKategori) {

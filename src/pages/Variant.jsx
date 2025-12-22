@@ -15,8 +15,9 @@ const Variant = () => {
     isError,
     error,
   } = useQuery({ queryKey: ["variants"], queryFn: getAllVariant });
-  const [variantsCopy, setVariantsCopy] = useState([]);
+
   const navigate = useNavigate();
+  const [searchTerm, setSearchTerm] = useState("");
   const [notification, setNotification] = useState({
     message: "",
     variant: "warning",
@@ -27,16 +28,17 @@ const Variant = () => {
     setTimeout(() => setNotification({}), 2500);
   };
 
-  useEffect(() => {
-    setVariantsCopy([...variants]);
-  }, [variants]);
+  // Filter variants based on search term
+  const filteredVariants = variants.filter((item) =>
+    item.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   useEffect(() => {
     if (isError) handleNotification(error, "error");
     return realtime("variant", () => {
-      queryClient.invalidateQueries("variants");
+      queryClient.invalidateQueries({ queryKey: ["variants"] });
     });
-  });
+  }, [isError, error, queryClient]);
 
   return (
     <>
@@ -77,20 +79,13 @@ const Variant = () => {
             </svg>
             <input
               type="search"
-              onInput={(e) =>
-                setVariantsCopy(
-                  variants.filter((item) =>
-                    item.name
-                      .toLowerCase()
-                      .includes(e.target.value.toLowerCase())
-                  )
-                )
-              }
+              value={searchTerm}
+              onInput={(e) => setSearchTerm(e.target.value)}
               placeholder="Search"
             />
           </label>
           <ul className="list bg-base-100">
-            {variantsCopy.map((variant, idx) => (
+            {filteredVariants.map((variant, idx) => (
               <li
                 key={variant.id}
                 onClick={() =>

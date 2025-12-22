@@ -81,7 +81,7 @@ const Cart = () => {
           </datalist>
           <ul className="flex-1 overflow-y-auto">
             {cart.map((item, idx) => {
-              const title = item.name ?? `Item #${item.menu_id ?? item.id}`;
+              const title = item.name;
               const activePrice =
                 item.discount_price && item.discount_price !== 0
                   ? item.discount_price
@@ -93,8 +93,10 @@ const Cart = () => {
                       state: {
                         idx: idx,
                         name: title,
+                        menu_id: item.menu_id,
                         note: item.note,
                         qty: item.qty,
+                        variants: item.variants,
                         original_price: item.original_price,
                         discount_price: item.discount_price,
                       },
@@ -108,8 +110,23 @@ const Cart = () => {
                     <div className="poppins-medium text-[14px] poppins-bold">
                       {title}
                     </div>
-                    <div className="poppins-medium text-xs">
-                      Catatan: {item.note}
+                    <div className="poppins-medium text-xs flex flex-col gap-1 mt-1">
+                      {item.variants?.map((vart, idx) => {
+                        const variantsName = vart.name;
+                        const optionsName = vart.options
+                          .map((opt) => opt.name)
+                          .join(", "); // ← Join dengan comma
+                        return (
+                          <div key={idx}>
+                            {variantsName}: {optionsName}
+                          </div>
+                        );
+                      })}
+                      {item.note && (
+                        <div>
+                          Catatan: {item.note}
+                        </div>
+                      )}
                     </div>
                   </div>
                   <div className="poppins-medium shrink-0 text-[14px] flex flex-col gap-2 items-center ml-auto">

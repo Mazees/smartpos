@@ -38,9 +38,15 @@ const Transaction = () => {
             detail.discount_price
               ? Number(detail.discount_price).toLocaleString("id-ID")
               : Number(detail.original_price).toLocaleString("id-ID")
-          })\nSubtotal: Rp ${Number(detail.subtotal).toLocaleString("id-ID")} ${
-            detail.note ? "\nCatatan: " + detail.note : ""
-          }${index + 1 === dataOrderDetails.length ? "" : "\n"}`
+          })\nSubtotal: Rp ${Number(detail.subtotal).toLocaleString(
+            "id-ID"
+          )}${detail.variants?.map((vart, idx) => {
+            const variantsName = vart.name;
+            const optionsName = vart.options.map((opt) => opt.name).join(", "); // ← Join dengan comma
+            return `\n${variantsName}: ${optionsName}`;
+          }).join("") ?? ""}${detail.note ? "\nCatatan: " + detail.note : ""}${
+            index + 1 === dataOrderDetails.length ? "" : "\n"
+          }`
       )
       .join(
         ""
@@ -196,6 +202,21 @@ const Transaction = () => {
                           Rp {Number(item.subtotal).toLocaleString("id-ID")}
                         </h1>
                       </div>
+                      {item.variants?.map((vart, idx) => {
+                        const variantsName = vart.name;
+                        const optionsName = vart.options
+                          .map((opt) => opt.name)
+                          .join(", "); // ← Join dengan comma
+                        return (
+                          <div
+                            key={idx}
+                            className="w-full flex justify-between poppins-light text-xs mt-2"
+                          >
+                            <h1 className="poppins-medium">{variantsName}</h1>
+                            <h1>{optionsName}</h1>
+                          </div>
+                        );
+                      })}
                       <div className="w-full flex justify-between poppins-light text-xs mt-2">
                         <h1 className="poppins-medium">Catatan</h1>
                         <h1>{item.note ? item.note : "-"}</h1>

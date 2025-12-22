@@ -4,37 +4,77 @@ import { useState, useEffect, useRef } from "react";
 import { CartContext } from "../contexts/CartContext";
 import { useContext } from "react";
 import WarningModal from "../components/WarningModal";
+import { useQueryClient, useQuery } from "@tanstack/react-query";
+import { getVariantByIdMenu, getAllVariant } from "../api/api";
 
 const DetailOrders = () => {
+  const queryClient = useQueryClient();
   const { cart, setCart } = useContext(CartContext);
   const isFirst = useRef(true);
   const navigate = useNavigate();
   const location = useLocation();
-  const [dataOrder, setDataOrder] = useState(location.state || null);
-  const [quantity, setQuantity] = useState(dataOrder.qty);
-  const [notes, setNotes] = useState(dataOrder.note);
-  const [indexCart, setIndexCart] = useState(dataOrder.idx);
+  useEffect(() => {
+    if (!location.state) {
+      navigate(-1);
+    }
+  }, [location.state, navigate]);
+  const [dataOrder, setDataOrder] = useState(location.state ?? null);
+  const [quantity, setQuantity] = useState(dataOrder?.qty ?? 0);
+  const [notes, setNotes] = useState(dataOrder?.note ?? "");
+  const [indexCart, setIndexCart] = useState(dataOrder?.idx ?? 0);
+  const [selectedVariants, setSelectedVariants] = useState(
+    dataOrder?.variants ?? []
+  );
+  const { data: variantsItem = [] } = useQuery({
+    queryKey: ["variantsItem"],
+    queryFn: () => getVariantByIdMenu(dataOrder?.menu_id),
+    enabled: !!dataOrder?.menu_id,
+  });
+  const { data: variants = [] } = useQuery({
+    queryKey: ["variants"],
+    queryFn: getAllVariant,
+    enabled: !!dataOrder?.menu_id,
+  });
+  const currentVariants = variants.filter((variant) =>
+    variantsItem.some((itemMenu) => itemMenu.id_variant === variant.id)
+  );
+  const [variantPrice, setVariantPrice] = useState(0);
+
+  useEffect(() => {
+    setVariantPrice(
+      selectedVariants.reduce(
+        (sum, variant) =>
+          sum + variant.options.reduce((sum2, opt) => sum2 + opt.price, 0),
+        0
+      )
+    );
+  }, [selectedVariants]);
+
+  const basePrice =
+    dataOrder.discount_price && dataOrder.discount_price !== 0
+      ? dataOrder.discount_price
+      : dataOrder.original_price;
+  const totalPrice = basePrice * quantity + variantPrice;
+
   const updateHandle = () => {
     setCart((prev) => {
       const updated = [...prev];
-      const activePrice =
-        dataOrder.discount_price && dataOrder.discount_price !== 0
-          ? dataOrder.discount_price
-          : dataOrder.original_price;
       updated[indexCart] = {
         ...updated[indexCart],
         qty: quantity,
         note: notes,
-        subtotal: quantity * activePrice,
+        subtotal: quantity * totalPrice,
+        variants: [...selectedVariants],
       };
       return updated;
     });
   };
   useEffect(() => {
+    console.log(variantsItem);
     if (quantity <= 0) {
       setQuantity(1);
     }
-  }, [quantity]);
+  }, [quantity, variantsItem]);
   useEffect(() => {
     if (isFirst.current) {
       isFirst.current = false;
@@ -46,6 +86,63 @@ const DetailOrders = () => {
       navigate(-1);
     }
   }, [cart]);
+  const handleVariantChange = (variant, option, isChecked) => {
+    setSelectedVariants((prev) => {
+      const variantIndex = prev.findIndex((v) => v.id === variant.id);
+
+      if (variantIndex === -1) {
+        // Variant belum ada - create new
+        if (!isChecked) return prev;
+        return [
+          ...prev,
+          {
+            id: variant.id,
+            name: variant.name,
+            required: variant.required,
+            multiple: variant.multiple,
+            options: [
+              { id: option.id, name: option.name, price: option.price },
+            ],
+          },
+        ];
+      }
+
+      // Variant sudah ada - update options
+      return prev
+        .map((vart, idx) => {
+          if (idx !== variantIndex) return vart;
+
+          if (variant.multiple) {
+            // Checkbox - toggle
+            if (isChecked) {
+              return {
+                ...vart,
+                options: [
+                  ...vart.options,
+                  { id: option.id, name: option.name, price: option.price },
+                ],
+              };
+            } else {
+              const newOptions = vart.options.filter(
+                (opt) => opt.id !== option.id
+              );
+              return newOptions.length === 0
+                ? null
+                : { ...vart, options: newOptions };
+            }
+          } else {
+            // Radio - replace
+            return {
+              ...vart,
+              options: [
+                { id: option.id, name: option.name, price: option.price },
+              ],
+            };
+          }
+        })
+        .filter(Boolean);
+    });
+  };
   return (
     <>
       {dataOrder ? (
@@ -58,6 +155,41 @@ const DetailOrders = () => {
               : dataOrder.original_price
             )?.toLocaleString("id-ID")}
           </p>
+          <div className="poppins-regular lg:text-base text-sm opacity-70 flex flex-col gap-2 mt-2">
+            {currentVariants.map((variant, idx) => (
+              <div>
+                <h3
+                  className="poppins-medium lg:text-base text-sm"
+                  key={variant.id || idx}
+                >
+                  {variant.name}:
+                </h3>
+                <div className="flex flex-col gap-2 mt-2">
+                  {variant.options.map((option, idx) => (
+                    <label htmlFor="variant.id">
+                      <input
+                        className={variant.multiple ? "checkbox" : "radio"}
+                        type={variant.multiple ? "checkbox" : "radio"}
+                        name={`variant-${variant.id}`}
+                        id={`option-${option.id}`}
+                        value={option.name}
+                        required={variant.required}
+                        checked={selectedVariants
+                          .find((selVar) => selVar.id === variant.id)
+                          .options.find((vart) => vart.id === option.id)}
+                        onChange={(e) =>
+                          handleVariantChange(variant, option, e.target.checked)
+                        }
+                      />
+                      <span className="poppins-regular ml-2 lg:text-base text-sm">
+                        {option.name}: Rp {option.price.toLocaleString("id-ID")}
+                      </span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
           <fieldset className="fieldset w-full">
             <legend className="fieldset-legend poppins-regular">
               Tambahkan Catatan:

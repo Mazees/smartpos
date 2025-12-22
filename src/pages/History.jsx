@@ -14,7 +14,6 @@ const History = () => {
     isError: ordersError,
     error,
   } = useQuery({ queryKey: ["orders"], queryFn: getAllOrders });
-  const [ordersCopy, setOrdersCopy] = useState([]);
   const [notification, setNotification] = useState({
     message: "",
     variant: "warning",
@@ -25,9 +24,8 @@ const History = () => {
     setTimeout(() => setNotification({}), 2500);
   };
 
-  useEffect(() => {
-    setOrdersCopy([...orders]);
-  }, [orders]);
+  // Computed value - orders copy (auto updates when orders changes)
+  const ordersCopy = orders ? [...orders] : [];
 
   useEffect(() => {
     if (ordersError) {

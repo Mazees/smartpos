@@ -17,7 +17,6 @@ const Products = () => {
     isError: isErrorMenu,
     error: errorMenu,
   } = useQuery({ queryKey: ["menu"], queryFn: getAllMenu });
-  const [menuItemsCopy, setMenuItemsCopy] = useState([]);
   const {
     data: kategoriItems = [],
     isLoading,
@@ -34,9 +33,10 @@ const Products = () => {
   };
   const navigate = useNavigate();
 
-  useEffect(() => {
-    setMenuItemsCopy([...menuItems].sort((a, b) => b.price - a.price));
-  }, [menuItems]);
+  // Computed value - sorted menu items (auto updates when menuItems changes)
+  const menuItemsCopy = menuItems
+    ? [...menuItems].sort((a, b) => b.price - a.price)
+    : [];
 
   useEffect(() => {
     if (errorMenu) {

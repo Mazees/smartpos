@@ -106,7 +106,6 @@ export const getAllVariant = async () => {
 
 export const addVariant = async (
   name,
-  desc,
   required,
   multiple,
   options = []
@@ -116,7 +115,6 @@ export const addVariant = async (
     .insert([
       {
         name: name,
-        desc: desc,
         required: required,
         multiple: multiple,
         options: options,
@@ -128,7 +126,6 @@ export const addVariant = async (
 export const updateVariant = async (
   id,
   name,
-  desc,
   required,
   multiple,
   options = []
@@ -138,7 +135,6 @@ export const updateVariant = async (
     .update([
       {
         name: name,
-        desc: desc,
         required: required,
         multiple: multiple,
         options: options,

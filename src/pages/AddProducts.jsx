@@ -249,16 +249,9 @@ const AddProducts = () => {
                   return (
                     <div
                       key={variant.id}
-                      className="p-3 border rounded-lg flex items-start justify-between gap-3"
+                      className="p-3 border rounded-lg flex items-center justify-between gap-3"
                     >
-                      <div className="flex-1">
-                        <div className="font-medium">{variant.name}</div>
-                        {variant.desc && (
-                          <div className="text-xs opacity-60 mt-1">
-                            {variant.desc}
-                          </div>
-                        )}
-                      </div>
+                      <div className="poppins-medium">{variant.name}</div>
                       <button
                         type="button"
                         className="btn btn-error btn-sm"
@@ -313,17 +306,10 @@ const AddProducts = () => {
                       <button
                         key={variant.id}
                         type="button"
-                        className="btn btn-ghost justify-start text-left h-auto py-3"
+                        className="btn btn-outline justify-start text-left h-auto py-3"
                         onClick={() => handleAddVariant(variant)}
                       >
-                        <div className="flex flex-col items-start">
-                          <span className="font-medium">{variant.name}</span>
-                          {variant.desc && (
-                            <span className="text-xs opacity-60">
-                              {variant.desc}
-                            </span>
-                          )}
-                        </div>
+                        <span className="font-medium">{variant.name}</span>
                       </button>
                     ))}
 
