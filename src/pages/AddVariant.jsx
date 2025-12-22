@@ -122,7 +122,7 @@ const AddVariant = () => {
         <Alert message={notification.message} variant={notification.variant} />
 
         <form className="flex flex-col gap-2" onSubmit={handleSubmit}>
-          <legend className="fieldset-legend">Details Variant</legend>
+          <legend className="fieldset-legend text-xl poppins-bold">Details Variant</legend>
 
           <label className="label">Nama Variant:</label>
           <input
