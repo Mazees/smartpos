@@ -208,11 +208,10 @@ export const saveMenuVariants = async (menuId, variants) => {
   }
 };
 
-export const getVariantMenu = async (menuId) => {
+export const getAllVariantMenu = async () => {
   const { data, error } = await supabase
     .from("variant_menu")
-    .select("*")
-    .eq("id_menu", menuId);
+    .select("*");
   if (error) throw error;
   return data;
 };
