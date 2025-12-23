@@ -97,7 +97,7 @@ Format output jika ada error:
 {
  "error": "Ambiguous item" | "Item not found",
  "message": "Penjelasan error",
- "result": []
+ "result": []         
 }
 
 Pesan pelanggan:

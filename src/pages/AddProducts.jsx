@@ -146,7 +146,7 @@ const AddProducts = () => {
   const handleAddVariant = async (variant) => {
     const variantCount = await countVariantMenu();
     setSelectedVariantCopy([
-      ...selectedVariants,
+      ...selectedVariantCopy,
       {
         id_variant: variant.id,
         id_menu: dataProducts.id,
