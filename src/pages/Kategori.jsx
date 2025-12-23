@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import Breadcrumbs from "../components/Breadcrumbs";
 import Loading from "../components/Loading";
 import { getAllKategori, realtime } from "../api/api";
@@ -24,8 +24,18 @@ const Kategori = () => {
     setTimeout(() => setNotification({}), 2500);
   };
 
-  // Computed value - kategori copy (auto updates when kategori changes)
-  const kategoriCopy = kategori ? [...kategori] : [];
+  const [searchTerm, setSearchTerm] = useState("");
+  const kategoriCopy = useMemo(() => {
+    if (!kategori) return [];
+    let result = [...kategori];
+    if (searchTerm.trim() !== "") {
+      const keyword = searchTerm.toLowerCase();
+      result = result.filter((item) =>
+        item.name.toLowerCase().includes(keyword)
+      );
+    }
+    return result.sort((a, b) => b.price - a.price);
+  }, [kategori, searchTerm]);
 
   useEffect(() => {
     if (errorKategori) {
@@ -78,15 +88,7 @@ const Kategori = () => {
             </svg>
             <input
               type="search"
-              onInput={(e) =>
-                setkategoriCopy(
-                  kategori.filter((item) =>
-                    item.name
-                      .toLowerCase()
-                      .includes(e.target.value.toLowerCase())
-                  )
-                )
-              }
+              onInput={(e) => setSearchTerm(e.target.value)}
               placeholder="Search"
             />
           </label>

@@ -1,7 +1,7 @@
 import Loading from "../components/Loading";
 import Alert from "../components/Alert";
 import { addMenu } from "../api/api";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import Breadcrumbs from "../components/Breadcrumbs";
 import { getAllMenu, getAllKategori } from "../api/api";
@@ -33,10 +33,18 @@ const Products = () => {
   };
   const navigate = useNavigate();
 
-  // Computed value - sorted menu items (auto updates when menuItems changes)
-  const menuItemsCopy = menuItems
-    ? [...menuItems].sort((a, b) => b.price - a.price)
-    : [];
+  const [searchTerm, setSearchTerm] = useState("");
+  const menuItemsCopy = useMemo(() => {
+    if (!menuItems) return [];
+    let result = [...menuItems];
+    if (searchTerm.trim() !== "") {
+      const keyword = searchTerm.toLowerCase();
+      result = result.filter((item) =>
+        item.name.toLowerCase().includes(keyword)
+      );
+    }
+    return result.sort((a, b) => b.price - a.price);
+  }, [menuItems, searchTerm]);
 
   useEffect(() => {
     if (errorMenu) {
@@ -99,15 +107,7 @@ const Products = () => {
             </svg>
             <input
               type="search"
-              onInput={(e) =>
-                setMenuItemsCopy(
-                  menuItems.filter((item) =>
-                    item.name
-                      .toLowerCase()
-                      .includes(e.target.value.toLowerCase())
-                  )
-                )
-              }
+              onInput={(e) => setSearchTerm(e.target.value)}
               placeholder="Search"
             />
           </label>

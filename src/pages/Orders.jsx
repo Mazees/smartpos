@@ -1,4 +1,4 @@
-import { useState, useEffect, useContext } from "react";
+import { useState, useEffect, useContext, useMemo } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
 import {
   getAllReadyMenu,
@@ -28,6 +28,9 @@ const Orders = () => {
   const navigate = useNavigate();
   const [totalHarga, setTotalHarga] = useState(0);
   const [jumlahItem, setJumlahItem] = useState(0);
+  const [kategoriId, setKategoriId] = useState("-1");
+  const [searchTerm, setSearchTerm] = useState("");
+
   const {
     data: kategori = [],
     isLoading,
@@ -78,8 +81,19 @@ const Orders = () => {
     setLoadingSmartOrder(false);
   };
 
-  // Computed value - sorted menu (auto updates when menu changes)
-  const menuCopy = menu ? [...menu].sort((a, b) => b.price - a.price) : [];
+  const menuCopy = useMemo(() => {
+    if (!menu) return [];
+    let result = [...menu];
+    if (kategoriId != -1)
+      result = result.filter((items) => items.id_kategori == kategoriId);
+    if (searchTerm.trim() !== "") {
+      const keyword = searchTerm.toLowerCase();
+      result = result.filter((item) =>
+        item.name.toLowerCase().includes(keyword)
+      );
+    }
+    return result.sort((a, b) => b.price - a.price);
+  }, [menu, kategoriId, searchTerm]);
 
   useEffect(() => {
     console.log(cart);
@@ -260,14 +274,8 @@ const Orders = () => {
               <div className="flex border rounded-lg w-lg not-lg:w-full poppins-regular">
                 <select
                   onChange={(e) => {
-                    const kategoriId = e.target.value;
-                    if (kategoriId === "-1") {
-                      setMenuCopy([...menu]);
-                      return;
-                    }
-                    setMenuCopy(
-                      menu.filter((item) => item.id_kategori == kategoriId)
-                    );
+                    const kategoriIdSelected = e.target.value;
+                    setKategoriId(kategoriIdSelected);
                   }}
                   className="select outline-none border-none shadow-none appearance-none focus:outline-none not-lg:w-full poppins-regular"
                 >
@@ -297,15 +305,7 @@ const Orders = () => {
                   </svg>
                   <input
                     type="search"
-                    onInput={(e) =>
-                      setMenuCopy(
-                        menu.filter((item) =>
-                          item.name
-                            .toLowerCase()
-                            .includes(e.target.value.toLowerCase())
-                        )
-                      )
-                    }
+                    onInput={(e) => setSearchTerm(e.target.value)}
                     placeholder="Search"
                   />
                 </label>
@@ -359,71 +359,80 @@ const Orders = () => {
                   {jumlahItem} Items
                 </button>
               </div>
-              {kategori.map((kat, idxKategori) => (
-                <ul
-                  className="list bg-base-100 mt-3 border-b-[0.05px] border-b-accent/40 py-4"
-                  key={kat.id || idxKategori}
-                >
-                  <h1 className="poppins-medium w-full mb-1">
-                    {kat.nama_kategori || kat.name}:
-                  </h1>
-                  {menuCopy
-                    .filter((menu) => menu.id_kategori === kat.id)
-                    .map((menu, idx) => (
-                      <li
-                        key={menu.id || idx}
-                        onClick={() => handleClickItem(menu)}
-                        className="p-4 gap-2 flex items-center list-row active:bg-base-content/30 active:text-white hover:cursor-pointer"
-                      >
-                        <div className="w-10 h-10 flex justify-center items-center poppins-bold bg-base-content rounded-lg text-base-300">
-                          {menu.name
-                            .split(" ")
-                            .slice(0, 2)
-                            .map((item) => item[0])}
-                        </div>
-                        <div className="flex flex-col justify-center">
-                          <div className="poppins-medium text-[14px] poppins-bold">
-                            {menu.name}
-                          </div>
-                          <div className="poppins-medium text-[14px] flex gap-1">
-                            <h1>
-                              Rp{" "}
-                              <span
-                                className={`${
-                                  menu.discount_price == 0 ? "" : "line-through"
-                                }`}
-                              >{` ${menu.price.toLocaleString("id-ID")}`}</span>
-                            </h1>
-                            <h1
-                              className={`${
-                                menu.discount_price == 0 ? "hidden" : ""
-                              }`}
-                            >{`${menu.discount_price.toLocaleString(
-                              "id-ID"
-                            )}`}</h1>
-                          </div>
-                        </div>
-                        <div
-                          className={`poppins-bold bg-base-300 ml-auto w-5 h-5 text-xs opacity-50 ${
-                            cart.findIndex(
-                              (item) => item.menu_id == menu.id
-                            ) !== -1
-                              ? "flex"
-                              : "hidden"
-                          } justify-center items-center rounded-[5px]`}
+              {kategori.map((kat, idxKategori) => {
+                const menuFilterKategori = menuCopy.filter(
+                  (items) => items.id_kategori === kat.id
+                );
+                if (menuFilterKategori.length !== 0)
+                  return (
+                    <ul
+                      className="list bg-base-100 mt-3 border-b-[0.05px] border-b-accent/40 py-4"
+                      key={kat.id || idxKategori}
+                    >
+                      <h1 className="poppins-medium w-full mb-1">
+                        {kat.nama_kategori || kat.name}:
+                      </h1>
+                      {menuFilterKategori.map((menu, idx) => (
+                        <li
+                          key={menu.id || idx}
+                          onClick={() => handleClickItem(menu)}
+                          className="p-4 gap-2 flex items-center list-row active:bg-base-content/30 active:text-white hover:cursor-pointer"
                         >
-                          {cart.findIndex((item) => item.menu_id == menu.id) !==
-                            -1 &&
-                            cart.reduce((sum, item) => {
-                              if (item.menu_id == menu.id)
-                                return sum + item.qty;
-                              return sum;
-                            }, 0)}
-                        </div>
-                      </li>
-                    ))}
-                </ul>
-              ))}
+                          <div className="w-10 h-10 flex justify-center items-center poppins-bold bg-base-content rounded-lg text-base-300">
+                            {menu.name
+                              .split(" ")
+                              .slice(0, 2)
+                              .map((item) => item[0])}
+                          </div>
+                          <div className="flex flex-col justify-center">
+                            <div className="poppins-medium text-[14px] poppins-bold">
+                              {menu.name}
+                            </div>
+                            <div className="poppins-medium text-[14px] flex gap-1">
+                              <h1>
+                                Rp{" "}
+                                <span
+                                  className={`${
+                                    menu.discount_price == 0
+                                      ? ""
+                                      : "line-through"
+                                  }`}
+                                >{` ${menu.price.toLocaleString(
+                                  "id-ID"
+                                )}`}</span>
+                              </h1>
+                              <h1
+                                className={`${
+                                  menu.discount_price == 0 ? "hidden" : ""
+                                }`}
+                              >{`${menu.discount_price.toLocaleString(
+                                "id-ID"
+                              )}`}</h1>
+                            </div>
+                          </div>
+                          <div
+                            className={`poppins-bold bg-base-300 ml-auto w-5 h-5 text-xs opacity-50 ${
+                              cart.findIndex(
+                                (item) => item.menu_id == menu.id
+                              ) !== -1
+                                ? "flex"
+                                : "hidden"
+                            } justify-center items-center rounded-[5px]`}
+                          >
+                            {cart.findIndex(
+                              (item) => item.menu_id == menu.id
+                            ) !== -1 &&
+                              cart.reduce((sum, item) => {
+                                if (item.menu_id == menu.id)
+                                  return sum + item.qty;
+                                return sum;
+                              }, 0)}
+                          </div>
+                        </li>
+                      ))}
+                    </ul>
+                  );
+              })}
               <ul className="list bg-base-100 mt-3 border-b-[0.05px] border-b-accent/40 py-4">
                 <h1 className="poppins-medium w-full mb-1">Semua Menu:</h1>
                 {menuCopy.map((menu, idx) => (
