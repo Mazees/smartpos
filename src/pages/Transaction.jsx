@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useContext } from "react";
-import Breadcrumbs from "../components/Breadcrumbs";
+
 import * as htmlToImage from "html-to-image";
 import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
 import { CartContext } from "../contexts/CartContext";
@@ -38,13 +38,17 @@ const Transaction = () => {
             detail.discount_price
               ? Number(detail.discount_price).toLocaleString("id-ID")
               : Number(detail.original_price).toLocaleString("id-ID")
-          })\nSubtotal: Rp ${Number(detail.subtotal).toLocaleString(
-            "id-ID"
-          )}${detail.variants?.map((vart, idx) => {
-            const variantsName = vart.name;
-            const optionsName = vart.options.map((opt) => opt.name).join(", "); // ← Join dengan comma
-            return `\n${variantsName}: ${optionsName}`;
-          }).join("") ?? ""}${detail.note ? "\nCatatan: " + detail.note : ""}${
+          })\nSubtotal: Rp ${Number(detail.subtotal).toLocaleString("id-ID")}${
+            detail.variants
+              ?.map((vart, idx) => {
+                const variantsName = vart.name;
+                const optionsName = vart.options
+                  .map((opt) => opt.name)
+                  .join(", "); // ← Join dengan comma
+                return `\n${variantsName}: ${optionsName}`;
+              })
+              .join("") ?? ""
+          }${detail.note ? "\nCatatan: " + detail.note : ""}${
             index + 1 === dataOrderDetails.length ? "" : "\n"
           }`
       )

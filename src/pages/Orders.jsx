@@ -8,7 +8,7 @@ import {
 } from "../api/api";
 import { realtime } from "../api/api";
 import Loading from "../components/Loading";
-import Breadcrumbs from "../components/Breadcrumbs";
+
 import { CartContext } from "../contexts/CartContext";
 import Alert from "../components/Alert";
 import { fetchAI } from "../api/ai";

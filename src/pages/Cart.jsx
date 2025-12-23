@@ -1,4 +1,3 @@
-import Breadcrumbs from "../components/Breadcrumbs";
 import Loading from "../components/Loading";
 import { useContext, useEffect, useState } from "react";
 import { CartContext } from "../contexts/CartContext";
@@ -122,11 +121,7 @@ const Cart = () => {
                           </div>
                         );
                       })}
-                      {item.note && (
-                        <div>
-                          Catatan: {item.note}
-                        </div>
-                      )}
+                      {item.note && <div>Catatan: {item.note}</div>}
                     </div>
                   </div>
                   <div className="poppins-medium shrink-0 text-[14px] flex flex-col gap-2 items-center ml-auto">

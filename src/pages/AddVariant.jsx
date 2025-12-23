@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import Breadcrumbs from "../components/Breadcrumbs";
+
 import { useLocation, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import Alert from "../components/Alert";
@@ -74,12 +74,7 @@ const AddVariant = () => {
         );
       } else {
         // Create mode
-        result = await addVariant(
-          namaVariant,
-          required,
-          multiple,
-          options
-        );
+        result = await addVariant(namaVariant, required, multiple, options);
       }
 
       if (result.error) {
@@ -122,7 +117,9 @@ const AddVariant = () => {
         <Alert message={notification.message} variant={notification.variant} />
 
         <form className="flex flex-col gap-2" onSubmit={handleSubmit}>
-          <legend className="fieldset-legend text-xl poppins-bold">Details Variant</legend>
+          <legend className="fieldset-legend text-xl poppins-bold">
+            Details Variant
+          </legend>
 
           <label className="label">Nama Variant:</label>
           <input

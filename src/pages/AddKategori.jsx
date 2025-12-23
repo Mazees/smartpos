@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import Breadcrumbs from "../components/Breadcrumbs";
+
 import { useLocation, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { addKategori, updateKategori, deleteKategori } from "../api/api";

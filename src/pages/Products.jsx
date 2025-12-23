@@ -3,7 +3,7 @@ import Alert from "../components/Alert";
 import { addMenu } from "../api/api";
 import { useEffect, useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import Breadcrumbs from "../components/Breadcrumbs";
+
 import { getAllMenu, getAllKategori } from "../api/api";
 import supabase from "../api/supabase";
 import { realtime } from "../api/api";

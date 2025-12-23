@@ -59,6 +59,9 @@ Tugasmu:
    - Note: Instruksi khusus (tanpa bawang, extra pedas, dll)
 7. Format Error: Jika ambigu atau tidak ketemu, return JSON error.
 8. Output HANYA JSON, TIDAK ADA teks lain.
+9. Kalau ada menu yg dimana ada variant required dan user tidak mencantumkan variant nya kasih output error dan suruh user mencantumkan variant yang wajib diisi pada menu tersebut.
+10. Untuk variant level pedas jika user tidak mencantumkan pilih sedang aja.
+11. Selalu gunakan bahasa indonesia
 
 Format output jika tidak ada error:
 {

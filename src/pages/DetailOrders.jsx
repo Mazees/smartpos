@@ -1,4 +1,3 @@
-import Breadcrumbs from "../components/Breadcrumbs";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
 import { CartContext } from "../contexts/CartContext";

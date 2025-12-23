@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
-import Breadcrumbs from "../components/Breadcrumbs";
+
 import Loading from "../components/Loading";
 import { getAllKategori, realtime } from "../api/api";
 import { useNavigate } from "react-router-dom";

@@ -1,5 +1,5 @@
 import ListNav from "../components/ListNav";
-import Breadcrumbs from "../components/Breadcrumbs";
+
 import {
   getAllKategori,
   getAllMenu,
