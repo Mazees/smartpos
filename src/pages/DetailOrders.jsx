@@ -35,9 +35,6 @@ const DetailOrders = () => {
     queryFn: getAllVariant,
     enabled: !!dataOrder?.menu_id,
   });
-  const currentVariants = variants.filter((variant) =>
-    variantsItem.some((itemMenu) => itemMenu.id_variant === variant.id)
-  );
   const [variantPrice, setVariantPrice] = useState(0);
 
   useEffect(() => {
@@ -156,7 +153,7 @@ const DetailOrders = () => {
             )?.toLocaleString("id-ID")}
           </p>
           <div className="poppins-regular lg:text-base text-sm opacity-70 flex flex-col gap-2 mt-2">
-            {currentVariants.map((variant, idx) => (
+            {variantsItem.map((variant, idx) => (
               <div>
                 <h3
                   className="poppins-medium lg:text-base text-sm"

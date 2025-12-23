@@ -5,7 +5,7 @@ import { useState } from "react";
 import {
   getAllKategori,
   getAllVariant,
-  getVariantByIdMenu,
+  getVariantMenuByIdMenu,
   realtime,
   deleteMenu,
   countVariantMenu,
@@ -39,7 +39,7 @@ const AddProducts = () => {
     error: errorSelectedVariants,
   } = useQuery({
     queryKey: ["selectedVariants"],
-    queryFn: () => getVariantByIdMenu(location.state.id),
+    queryFn: () => getVariantMenuByIdMenu(location.state.id),
     enabled: !!location.state?.id,
   });
   const [selectedVariantCopy, setSelectedVariantCopy] = useState([]);

@@ -128,9 +128,7 @@ const Orders = () => {
     setSelectState({
       isOpen: true,
       menu: menu,
-      variants: variants.filter((variant) =>
-        variantMenu.some((itemMenu) => itemMenu.id_variant === variant.id)
-      ),
+      variants: variantMenu,
     });
   };
 

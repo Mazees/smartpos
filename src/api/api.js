@@ -153,13 +153,29 @@ export const deleteVariant = async (id) => {
   return { data, error };
 };
 
-export const getVariantByIdMenu = async (id) => {
+export const getVariantMenuByIdMenu = async (id) => {
   const { data, error } = await supabase
     .from("variant_menu")
     .select("*")
     .eq("id_menu", id);
   if (error) throw error;
   return data;
+};
+export const getVariantByIdMenu = async (id) => {
+  const { data, error } = await supabase
+    .from("variant_menu")
+    .select(`
+      variant: id_variant(
+        id,
+        name,
+        options,
+        required,
+        multiple
+      )
+      `)
+    .eq("id_menu", id);
+  if (error) throw error;
+  return data.map(item=>item.variant);
 };
 
 export const countVariantMenu = async () => {
