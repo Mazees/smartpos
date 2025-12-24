@@ -4,6 +4,8 @@ import { useNavigate, useLocation } from "react-router-dom";
 import Alert from "../components/Alert";
 import * as htmlToImage from "html-to-image";
 import { addOrderDetails, addOrders, addMembers } from "../api/api";
+import { QRCodeSVG } from "qrcode.react";
+import { generateDynamicQris } from "../api/payment.cjs";
 
 const Payment = () => {
   const [page, setPage] = useState(1);
@@ -161,21 +163,45 @@ const Payment = () => {
         <div className="w-full flex flex-col gap-5 items-center">
           <button
             onClick={handleShare}
-            className="btn w-full lg:w-[300px] mx-auto poppins-bold mt-3"
+            className="btn w-full lg:w-[364px] mx-auto poppins-bold mt-3"
           >
             BAGIKAN QRIS
           </button>
           <div
             ref={captureRef}
-            className="bg-secondary rounded-4xl px-2 py-4 lg:w-[300px] overflow-hidden flex flex-col items-center  justify-center"
+            className="bg-secondary rounded-2xl p-6 shadow-2xl overflow-hidden flex flex-col items-center justify-center"
           >
-            <div className="poppins-regular text-primary-content mb-4 flex flex-col items-center">
-              Mohon Bayar Sebesar:{" "}
-              <span className="poppins-bold text-warning text-lg">
-                Rp {totalHarga.toLocaleString("id-ID")}
-              </span>
+            <div className="flex items-center gap-3 mb-6">
+              <img
+                src="/icon.png"
+                className="size-20"
+              />
+              <div className="text-left">
+                <h2 className="poppins-bold text-white text-lg">
+                  BURGER & KEBAB KUDAPAN
+                </h2>
+                <p className="text-white/80 text-xs poppins-regular">
+                  Scan untuk bayar
+                </p>
+              </div>
             </div>
-            <img className="w-full rounded-4xl" src="/qris.png" alt="QRIS" />
+            <div className="bg-white/10 backdrop-blur-sm rounded-xl px-6 py-3 mb-6 w-full">
+              <p className="text-white/70 text-xs poppins-regular text-center mb-1">
+                Total Pembayaran
+              </p>
+              <p className="poppins-bold text-warning text-2xl text-center">
+                Rp {totalHarga.toLocaleString("id-ID")}
+              </p>
+            </div>
+            <div className="p-4 rounded-2xl bg-white shadow-lg">
+              <QRCodeSVG
+                className="lg:size-[280px] size-[250px]"
+                value={generateDynamicQris(totalHarga)}
+              />
+            </div>
+            <div className="mt-6 text-center">
+              <img src="https://s6.imgcdn.dev/YUpUDK.png" className="w-[150px] mx-auto" alt="qris"/>
+            </div>
           </div>
           <button
             onClick={async () => {

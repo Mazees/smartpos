@@ -62,6 +62,7 @@ Tugasmu:
 9. Kalau ada menu yg dimana ada variant required dan user tidak mencantumkan variant nya kasih output error dan suruh user mencantumkan variant yang wajib diisi pada menu tersebut.
 10. Untuk variant level pedas jika user tidak mencantumkan pilih sedang aja.
 11. Selalu gunakan bahasa indonesia
+12. Dan ingat sekali lagi: **VARIANT INI HARUS COCOK DENGAN RELASI DIATAS, TIDAK ADA BOLEH KOSONG JIKA ITU ADA VARIANT YANG REQUIRED ATAU WAJIB DI PILIH**
 
 Format output jika tidak ada error:
 {
