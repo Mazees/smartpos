@@ -170,9 +170,12 @@ const DetailOrders = () => {
                         id={`option-${option.id}`}
                         value={option.name}
                         required={variant.required}
-                        checked={selectedVariants
-                          .find((selVar) => selVar.id === variant.id)
-                          .options.find((vart) => vart.id === option.id)}
+                        checked={
+                          selectedVariants
+                            .find((selVar) => selVar.id === variant.id)
+                            ?.options.find((vart) => vart.id === option.id) ??
+                          false
+                        }
                         onChange={(e) =>
                           handleVariantChange(variant, option, e.target.checked)
                         }

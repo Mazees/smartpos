@@ -311,8 +311,9 @@ export const addOrderDetails = async (orderDetails = []) => {
 
 // --- Members ---
 export const getAllMembers = async () => {
-  const { data, error } = await supabase.from("members").select("*");
-  return { data, error };
+  const { data, error } = await supabase.from("members").select("*").order("created_at", { ascending: false });
+  if (error) throw error;
+  return data;
 };
 
 export const addMembers = async (name) => {

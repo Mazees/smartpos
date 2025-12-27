@@ -1,59 +1,37 @@
 import Loading from "../components/Loading";
 import { useContext, useEffect, useState } from "react";
 import { CartContext } from "../contexts/CartContext";
-import { getAllMenu, getAllMembers } from "../api/api";
+import { getAllMembers } from "../api/api";
 import WarningModal from "../components/WarningModal";
 import { useNavigate } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
 
 const Cart = () => {
   const { cart, setCart } = useContext(CartContext);
-  const [menu, setMenu] = useState([]);
-  const [members, setMembers] = useState([]);
   const [totalHarga, setTotalHarga] = useState(0);
   const [jumlahItem, setJumlahItem] = useState(0);
   const [namaPelanggan, setNamaPelanggan] = useState("");
-  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
-  const loadData = async () => {
-    setLoading(true);
-    const { data: dataMenu, error: menuError } = await getAllMenu();
-    const { data: dataMembers, error: membersError } = await getAllMembers();
-    if (menuError) console.error(menuError);
-    if (membersError) console.error(membersError);
-    setMembers(dataMembers || []);
-    setMenu(dataMenu || []);
-    setLoading(false);
-  };
+  // Use React Query for members data
+  const {
+    data: members = [],
+    isLoading: loading,
+    isError,
+    error,
+  } = useQuery({ queryKey: ["members"], queryFn: getAllMembers });
 
   useEffect(() => {
-    loadData();
     setTotalHarga(cart.reduce((total, item) => total + item.subtotal, 0));
     setJumlahItem(cart.reduce((total, item) => total + item.qty, 0));
     if (cart.length == 0) navigate("/");
   }, [cart]);
 
   useEffect(() => {
-    console.log(members);
-  }, [members]);
-
-  const updateQty = (index, delta) => {
-    setCart((prev) => {
-      const prevItem = [...prev];
-      prevItem[index].qty = Math.max(1, (prevItem[index].qty || 0) + delta);
-      // Calculate active price: use discount_price if available and > 0, otherwise original_price
-      const activePrice =
-        prevItem[index].discount_price && prevItem[index].discount_price !== 0
-          ? prevItem[index].discount_price
-          : prevItem[index].original_price || 0;
-      prevItem[index].subtotal = prevItem[index].qty * activePrice;
-      return prevItem;
-    });
-  };
-
-  const removeItem = (menuId) => {
-    setCart((prev) => prev.filter((it) => (it.menu_id ?? it.id) != menuId));
-  };
+    if (error) {
+      console.error("Error loading members:", error);
+    }
+  }, [error]);
 
   return (
     <>
@@ -67,7 +45,7 @@ const Cart = () => {
         <>
           <input
             type="text"
-            className="input w-full lg:w-lg"
+            className="input w-full lg:w-lg mt-4"
             placeholder="Nama Pelanggan (opsional)"
             list="members"
             value={namaPelanggan}
@@ -81,13 +59,9 @@ const Cart = () => {
           <ul className="flex-1 overflow-y-auto">
             {cart.map((item, idx) => {
               const title = item.name;
-              const activePrice =
-                item.discount_price && item.discount_price !== 0
-                  ? item.discount_price
-                  : item.original_price;
               return (
                 <li
-                  onClick={() =>
+                  onClick={() => {
                     navigate("/keranjang/detail-pesanan", {
                       state: {
                         idx: idx,
@@ -95,12 +69,13 @@ const Cart = () => {
                         menu_id: item.menu_id,
                         note: item.note,
                         qty: item.qty,
-                        variants: item.variants,
+                        variants: item.variants ?? [],
                         original_price: item.original_price,
                         discount_price: item.discount_price,
                       },
-                    })
-                  }
+                    });
+                    console.log([...cart]);
+                  }}
                   key={item.menu_id ?? item.id}
                   className="p-4 gap-5 flex items-center border-b-[0.5px] active:bg-base-content/30 active:text-white hover:cursor-pointer"
                 >

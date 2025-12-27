@@ -271,22 +271,8 @@ const Orders = () => {
               <div className="py-4 opacity-60 tracking-wide poppins-regular">
                 Semua Daftar Menu:
               </div>
-              <div className="flex border rounded-lg w-lg not-lg:w-full poppins-regular">
-                <select
-                  onChange={(e) => {
-                    const kategoriIdSelected = e.target.value;
-                    setKategoriId(kategoriIdSelected);
-                  }}
-                  className="select outline-none border-none shadow-none appearance-none focus:outline-none not-lg:w-full poppins-regular"
-                >
-                  <option value="-1">Semua Kategori</option>
-                  {kategori.map((item) => (
-                    <option key={item.id} value={item.id}>
-                      {item.nama_kategori ?? item.name ?? `#${item.id}`}
-                    </option>
-                  ))}
-                </select>
-                <label className="input outline-none border-none shadow-none not-lg:w-full poppins-regular">
+              <div className="join">
+                <label className="input join-item poppins-regular">
                   <svg
                     className="h-[1em] opacity-50"
                     xmlns="http://www.w3.org/2000/svg"
@@ -309,6 +295,20 @@ const Orders = () => {
                     placeholder="Search"
                   />
                 </label>
+                <select
+                  onChange={(e) => {
+                    const kategoriIdSelected = e.target.value;
+                    setKategoriId(kategoriIdSelected);
+                  }}
+                  className="select join-item poppins-regular"
+                >
+                  <option value="-1">Semua Kategori</option>
+                  {kategori.map((item) => (
+                    <option key={item.id} value={item.id}>
+                      {item.nama_kategori ?? item.name ?? `#${item.id}`}
+                    </option>
+                  ))}
+                </select>
               </div>
               <div
                 className={`text-white fixed bottom-1 p-3 right-0 lg:w-fit w-full justify-end z-50 ${
