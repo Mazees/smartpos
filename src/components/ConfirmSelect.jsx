@@ -36,7 +36,7 @@ const ConfirmSelect = ({ selectState, onConfirm, onClose }) => {
   }, [menu]);
 
   const basePrice = menu?.discount_price || menu?.price || 0;
-  const totalPrice = basePrice * qty + variantPrice;
+  const totalPrice = (basePrice + variantPrice) * qty;
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -48,7 +48,7 @@ const ConfirmSelect = ({ selectState, onConfirm, onClose }) => {
           !variantSelected.find((varted) => vart.id === varted.id)
       )
     ) {
-      handleNotification("Tolong pilih variant yang wajib dipilih!", "warning")
+      handleNotification("Tolong pilih variant yang wajib dipilih!", "warning");
       return;
     }
     const cartItem = {
@@ -63,11 +63,10 @@ const ConfirmSelect = ({ selectState, onConfirm, onClose }) => {
     };
     onConfirm(cartItem);
     setVariantSelected([]);
-    onClose();
   };
 
   const handleQtyChange = (newQty) => {
-    setQty(Math.max(1, newQty));
+    setQty(newQty);
   };
 
   /* [
@@ -174,14 +173,17 @@ const ConfirmSelect = ({ selectState, onConfirm, onClose }) => {
           {/* Variants Display */}
           {variants && variants.length > 0 && (
             <div className="mt-4">
-              <div className="poppins-regular lg:text-base text-sm opacity-70 flex flex-col gap-4">
+              <ul className="poppins-regular lg:text-base text-sm opacity-70 flex flex-col gap-4">
                 {variants.map((variant, idx) => (
-                  <div>
-                    <h3
-                      className="poppins-medium lg:text-base text-sm"
-                      key={variant.id || idx}
-                    >
-                      {variant.name}{variant.required && variant.multiple ? " (Wajib Pilih Minimal 1)" : variant.required ? " (Wajib Pilih Salah Satu)" : ""}:
+                  <li key={variant.id}>
+                    <h3 className="poppins-medium lg:text-base text-sm">
+                      {variant.name}
+                      {variant.required && variant.multiple
+                        ? " (Wajib Pilih Minimal 1)"
+                        : variant.required
+                        ? " (Wajib Pilih Salah Satu)"
+                        : ""}
+                      :
                     </h3>
                     <div className="flex flex-col gap-2 mt-2">
                       {variant.options.map((option, idx) => (
@@ -208,9 +210,9 @@ const ConfirmSelect = ({ selectState, onConfirm, onClose }) => {
                         </label>
                       ))}
                     </div>
-                  </div>
+                  </li>
                 ))}
-              </div>
+              </ul>
             </div>
           )}
 
@@ -224,7 +226,10 @@ const ConfirmSelect = ({ selectState, onConfirm, onClose }) => {
             <div className="flex items-center justify-between w-full rounded-lg border p-1">
               <button
                 className="btn btn-sm lg:text-base text-sm"
-                onClick={() => handleQtyChange(qty - 1)}
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleQtyChange(qty - 1);
+                }}
                 disabled={qty <= 1}
               >
                 -
@@ -237,8 +242,11 @@ const ConfirmSelect = ({ selectState, onConfirm, onClose }) => {
                 onChange={(e) => handleQtyChange(parseInt(e.target.value) || 1)}
               />
               <button
-                className="btn btn-sm"
-                onClick={() => handleQtyChange(qty + 1)}
+                className="btn btn-sm lg:text-base text-sm"
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleQtyChange(qty + 1);
+                }}
               >
                 +
               </button>
