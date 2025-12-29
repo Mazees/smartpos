@@ -3,7 +3,7 @@ import { useState, useRef, useEffect, useContext } from "react";
 import * as htmlToImage from "html-to-image";
 import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
 import { CartContext } from "../contexts/CartContext";
-import iconBase64 from "../api/iconBase64";
+import iconBase64 from "../assets/iconBase64";
 
 const Transaction = () => {
   const captureRef = useRef(null);
