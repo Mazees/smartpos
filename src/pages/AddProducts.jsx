@@ -17,7 +17,7 @@ import WarningModal from "../components/WarningModal";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 const AddProducts = () => {
-  const queryClinent = useQueryClient();
+  const queryClient = useQueryClient();
   const location = useLocation();
   const [dataProducts, setDataProducts] = useState(location.state || {});
   const navigate = useNavigate();

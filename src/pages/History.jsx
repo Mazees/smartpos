@@ -34,12 +34,11 @@ const History = () => {
         `Error: ${error?.message ?? JSON.stringify(error)}`,
         "error"
       );
-      setOrders([]);
     }
     return realtime("orders", () => {
       queryClient.invalidateQueries({ queryKey: ["orders"] });
     });
-  }, []);
+  }, [ordersError]);
 
   const handleItemClick = async (order) => {
     const { data: details, error } = await getOrderDetails(order.id);

@@ -38,12 +38,6 @@ const Orders = () => {
     error: kategoriError,
   } = useQuery({ queryKey: ["kategori"], queryFn: getAllKategori });
   const {
-    data: variants = [],
-    isLoading: isLoadingVariants,
-    isError: isVariantsError,
-    error: varianError,
-  } = useQuery({ queryKey: ["variants"], queryFn: getAllVariant });
-  const {
     data: menu = [],
     isLoading: loading,
     isError: isMenuError,
@@ -186,6 +180,7 @@ const Orders = () => {
         qty: 1,
         note: manualNote,
         subtotal: priceManual,
+        variants: []
       },
     ]);
     setManualPrice("");

@@ -9,10 +9,6 @@ export async function fetchAI(pesanan) {
     allVariants = await getAllVariant();
     variantMenuRelations = await getAllVariantMenu();
 
-    const prompt = `
-    // ... rest of prompt
-    `;
-
     // ... rest of code
   } catch (error) {
     console.error("Error fetching data:", error);

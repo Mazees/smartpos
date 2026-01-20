@@ -5,7 +5,7 @@ import Alert from "../components/Alert";
 import * as htmlToImage from "html-to-image";
 import { addOrderDetails, addOrders, addMembers } from "../api/api";
 import { QRCodeSVG } from "qrcode.react";
-import { generateDynamicQris } from "../api/payment.cjs";
+import { generateDynamicQris } from "../api/payment.js";
 
 const Payment = () => {
   const [page, setPage] = useState(1);
@@ -34,7 +34,7 @@ const Payment = () => {
     setTotalHarga(cart.reduce((total, item) => total + item.subtotal, 0));
     setJumlahItem(cart.reduce((total, item) => total + item.qty, 0));
     if (cart.length === 0) navigate("/");
-  }, [cart]);
+  }, [cart, navigate]);
 
   const handleShare = () => {
     const node = captureRef.current;
